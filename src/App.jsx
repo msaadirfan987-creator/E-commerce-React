@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/home';
 import Shop from './pages/shop'; 
 import SingleProduct from './pages/SingleProduct';
+import AuthPage from './pages/AuthPage'; // Import the AuthPage component
 
 // Simple temporary placeholders for remaining pages so they don't break
 const About = () => <div className="p-12 text-center text-xl font-bold text-[#03045e]">About Us Page Coming Soon!</div>;
@@ -27,6 +28,7 @@ function App() {
           toh SingleProduct page sahi se load ho jayega!
         */}
         <Route path="/product/:id" element={<SingleProduct />} />
+        <Route path="/auth" element={<AuthPage />} />
       </Routes>
     </>
   );

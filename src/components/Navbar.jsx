@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom'; // Imported Link component
 import logo from '../assets/logo.png';
 import CartComponent from './CartComponent'; // Import the CartComponent
@@ -7,6 +7,10 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // 🔥 Profile box ke liye new states aur ref add kiye hain
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
 
   // Brand Palette Configuration
   const theme = {
@@ -17,6 +21,17 @@ const Navbar = () => {
     lightCyan: '#caf0f8',
     surface: '#ffffff',
   };
+
+  // 🔥 Outside Click Handler: Box ke bahar click karne par dropdown khud band ho jaye
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="w-full sticky top-0 z-50 shadow-sm bg-white select-none">
@@ -33,7 +48,9 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           <button className="hover:underline transition-all" style={{ color: theme.brightTealBlue }}>Follow orders</button>
           <span className="text-slate-300">|</span>
-          <button className="hover:underline transition-all" style={{ color: theme.deepTwilight }}>Sign In</button>
+          <Link to="/auth" className="hover:underline transition-all" style={{ color: theme.deepTwilight }}>
+            Sign In
+          </Link>
         </div>
       </div>
 
@@ -107,30 +124,57 @@ const Navbar = () => {
 
           {/* Shopping Cart */}
           <button 
-  onClick={() => setIsCartOpen(true)} // 🔥 Sirf ye click function lagaya hai
-  className="relative p-2 rounded-xl transition-colors hover:bg-slate-50"
->
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={theme.deepTwilight} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
-    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-  </svg>
-  <span 
-    style={{ backgroundColor: theme.brightTealBlue }} 
-    className="absolute top-0.5 right-0.5 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm"
-  >
-    3
-  </span>
-</button>
-{isCartOpen && (
-  <CartComponent isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-)}
-
-          {/* Profile */}
-          <button className="p-2 rounded-xl transition-colors hover:bg-slate-50 hidden sm:block">
+            onClick={() => setIsCartOpen(true)} 
+            className="relative p-2 rounded-xl transition-colors hover:bg-slate-50"
+          >
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={theme.deepTwilight} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+              <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
             </svg>
+            <span 
+              style={{ backgroundColor: theme.brightTealBlue }} 
+              className="absolute top-0.5 right-0.5 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm"
+            >
+              3
+            </span>
           </button>
+          {isCartOpen && (
+            <CartComponent isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+          )}
+
+          {/* --- PROFILE SECTION WITH DROPDOWN --- */}
+          {/* Kuch bhi purana delete nahi kiya, absolute position wrapper lagaya hai bas */}
+          <div className="relative hidden sm:block" ref={profileRef}>
+            <button 
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="p-2 rounded-xl transition-colors hover:bg-slate-50 focus:outline-none"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={theme.deepTwilight} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            </button>
+
+            {/* English Information Promoted Dropdown Box */}
+            {isProfileOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 z-[60] text-left">
+                <div className="space-y-1 mb-4">
+                  <h4 className="text-xs font-black text-slate-800">Account Access</h4>
+                  <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+                    Please login to access your account dashboard, track orders, and explore full features.
+                  </p>
+                </div>
+                
+                <Link
+                  to="/auth"
+                  onClick={() => setIsProfileOpen(false)}
+                  style={{ backgroundColor: theme.brightTealBlue }}
+                  className="w-full text-white text-xs font-bold py-2.5 rounded-xl text-center shadow-sm hover:opacity-95 active:scale-[0.98] transition-all block"
+                >
+                  Login / Register
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Mobile Hamburger Trigger */}
           <button 
