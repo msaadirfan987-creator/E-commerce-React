@@ -12,7 +12,7 @@ const FeaturedProducts = () => {
     cardBg: '#f8fafc'
   };
 
-  // State to track favorited product IDs dynamically
+  // Wishlist state
   const [favorites, setFavorites] = useState([]);
 
   const toggleFavorite = (id) => {
@@ -21,158 +21,201 @@ const FeaturedProducts = () => {
     );
   };
 
-  // 6 Curated products directly matching your active storefront categories
-  const products = [
+  // --- 1. FLASH SALE PRODUCTS (4 Items) ---
+  const flashSaleProducts = [
     {
       id: 1,
-      name: 'Wireless Noise-Canceling Headphones',
-      desc: 'Premium sound engineering with high-fidelity acoustics, active audio cancellation, and dual mic integration.',
+      name: 'Premium Wireless Headphones',
+      desc: 'High-fidelity acoustics with active noise cancellation and sleek matte finish.',
       price: '$299',
-      category: 'Electronics',
-      img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&auto=format&fit=crop&q=60'
+      img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80'
     },
     {
       id: 2,
-      name: 'Classic Urban Trench Coat',
-      desc: 'Tailored weather-resistant seasonal coat combining luxury comfort lining with an elegant minimalist fit.',
-      price: '$149',
-      category: 'Fashion & Apparel',
-      img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=500&auto=format&fit=crop&q=60'
+      name: 'Minimalist Leather Watch',
+      desc: 'Luxury quartz movement watch with a pure genuine brown leather strap.',
+      price: '$189',
+      img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80'
     },
     {
       id: 3,
-      name: 'Complete Skin Renewal Set',
-      desc: 'Organic moisturizing skincare serums and facial treatments enriched with nourishing restorative natural vitamins.',
-      price: '$79',
-      category: 'Beauty & Cosmetics',
-      img: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&auto=format&fit=crop&q=60'
+      name: 'Amoled Active Smart Watch',
+      desc: 'Real-time biometric tracker with built-in location positioning metrics.',
+      price: '$249',
+      img: 'https://images.unsplash.com/photo-1542496658-e33a6d0d50f6?w=600&auto=format&fit=crop&q=80'
     },
     {
       id: 4,
-      name: 'Minimalist Contemporary Sofa Set',
-      desc: 'High-density memory cushion couch featuring solid ash wood legs and premium anti-stain velvet upholstery fabrics.',
-      price: '$899',
-      category: 'Home & Living',
-      img: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 5,
-      name: 'Next-Gen Wireless Gaming Console',
-      desc: 'Ultra-fast custom solid-state drive loading architectural pipeline delivering immersive 4K high frame-rate rendering.',
+      name: 'Next-Gen Wireless Console',
+      desc: 'Ultra-fast solid-state loading pipeline delivering immersive 4K high frame-rates.',
       price: '$499',
-      category: 'Gaming Consoles',
-      img: 'https://images.unsplash.com/photo-1605901309584-818e25960a8f?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 6,
-      name: 'Amoled Active Fitness Smart Watch',
-      desc: 'Real-time biometric vital tracking sensor hub complete with built-in location positioning metrics and always-on display panel.',
-      price: '$249',
-      category: 'Smart Watches',
-      img: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=500&auto=format&fit=crop&q=60'
+      img: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&auto=format&fit=crop&q=80'
     }
   ];
 
+  // --- 2. HOME APPLIANCES PRODUCTS (4 Items) ---
+  const applianceProducts = [
+    {
+      id: 5,
+      name: 'Nordic Ceramic Flower Vase',
+      desc: 'Handcrafted contemporary clay vase optimized for sleek modern living rooms.',
+      price: '$45',
+      img: 'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=600&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 6,
+      name: 'Premium Espresso Coffee Maker',
+      desc: 'Compact high-pressure barista machine for perfect morning coffee extractions.',
+      price: '$185',
+      img: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=600&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 7,
+      name: 'Minimalist Contemporary Sofa Set',
+      desc: 'High-density memory cushion couch featuring solid ash wood legs and premium fabrics.',
+      price: '$899',
+      img: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 8,
+      name: 'Smart Ambient LED Bar',
+      desc: 'RGB color sync automation tube for immersive workspace background setups.',
+      price: '$59',
+      img: 'https://images.unsplash.com/photo-1507646227500-4d389b0012be?w=600&auto=format&fit=crop&q=80'
+    }
+  ];
+
+  // --- 3. TRENDING FASHION PRODUCTS (4 Items) ---
+  const fashionProducts = [
+    {
+      id: 9,
+      name: 'Classic Urban Trench Coat',
+      desc: 'Tailored weather-resistant apparel combining comfort with a modern fit.',
+      price: '$149',
+      img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 10,
+      name: 'Organic Skin Renewal Serum',
+      desc: 'Natural moisturizing facial oil enriched with vitamins and herbal essence.',
+      price: '$79',
+      img: 'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=600&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 11,
+      name: 'Premium Leather Boots',
+      desc: 'Handcrafted durable outdoor vintage leather shoes with memory soft inner sole.',
+      price: '$199',
+      img: 'https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=600&auto=format&fit=crop&q=80'
+    },
+    {
+      id: 12,
+      name: 'Retro Canvas Backpack',
+      desc: 'Waterproof high-capacity traveling pack with laptop compartment sleeves.',
+      price: '$85',
+      img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80'
+    }
+  ];
+
+  // Reusable card grid renderer with 100% fixed alignments
+  const renderProductGrid = (items) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {items.map((product) => {
+        const isFavorited = favorites.includes(product.id);
+        return (
+          <div 
+            key={product.id}
+            className="flex flex-col rounded-2xl overflow-hidden bg-white border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative h-full"
+            style={{ borderColor: theme.frostedBlue }}
+          >
+            {/* Image Box - Fixed aspect ratio to avoid layout shifts */}
+            <div className="w-full h-52 bg-slate-50 relative group overflow-hidden">
+              <button 
+                onClick={() => toggleFavorite(product.id)}
+                className="absolute top-4 left-4 z-20 p-2 rounded-xl bg-white/80 backdrop-blur-md shadow-sm border border-white/20 transition-all duration-200 hover:bg-white hover:scale-110"
+              >
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="18" 
+                  height="18" 
+                  viewBox="0 0 24 24" 
+                  fill={isFavorited ? "#ef4444" : "none"} 
+                  stroke={isFavorited ? "#ef4444" : theme.deepTwilight} 
+                  strokeWidth="2.5"
+                >
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                </svg>
+              </button>
+
+              <img 
+                src={product.img} 
+                alt={product.name} 
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
+              />
+            </div>
+
+            {/* Content Details */}
+            <div className="p-4 flex flex-col flex-grow justify-between bg-white">
+              <div className="mb-4">
+                <h3 className="text-sm font-bold tracking-wide line-clamp-1" style={{ color: theme.deepTwilight }}>
+                  {product.name}
+                </h3>
+                <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  {product.desc}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5 border-t border-slate-100">
+                <span className="text-base font-black tracking-tight" style={{ color: theme.deepTwilight }}>
+                  {product.price}
+                </span>
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-slate-50 text-slate-400">
+                  In Stock
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <section className="w-full py-16 bg-white select-none">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="w-full py-12 bg-white select-none">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 space-y-16">
         
-        {/* --- SECTION TITLE --- */}
-        <div className="mb-12 border-b pb-4" style={{ borderColor: theme.frostedBlue }}>
-          <h2 className="text-2xl font-bold tracking-tight" style={{ color: theme.deepTwilight }}>
-            Featured Products
-          </h2>
+        {/* === SECTION 1: FLASH SALE === */}
+        <div>
+          <div className="mb-6 border-b pb-4" style={{ borderColor: theme.frostedBlue }}>
+            <h2 className="text-xl font-black tracking-tight uppercase" style={{ color: theme.deepTwilight }}>
+              Flash Sale
+            </h2>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Grab these hot deals before they are gone</p>
+          </div>
+          {renderProductGrid(flashSaleProducts)}
         </div>
 
-        {/* --- PRODUCTS GRID --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => {
-            const isFavorited = favorites.includes(product.id);
-            
-            return (
-              <div 
-                key={product.id}
-                className="flex flex-col rounded-2xl overflow-hidden bg-white border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative"
-                style={{ borderColor: theme.frostedBlue }}
-              >
-                
-                {/* 1. TOP SIDE: Product Image & Favorite Button Overlay */}
-                <div className="w-full h-56 overflow-hidden bg-slate-50 relative group">
-                  
-                  {/* Floating Favorite (Heart) Button on Left Side */}
-                  <button 
-                    onClick={() => toggleFavorite(product.id)}
-                    className="absolute top-4 left-4 z-20 p-2 rounded-xl bg-white/70 backdrop-blur-md shadow-sm border border-white/20 transition-all duration-200 hover:bg-white hover:scale-110 group/fav"
-                    title={isFavorited ? "Remove from Wishlist" : "Add to Wishlist"}
-                  >
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="18" 
-                      height="18" 
-                      viewBox="0 0 24 24" 
-                      fill={isFavorited ? "#ef4444" : "none"} 
-                      stroke={isFavorited ? "#ef4444" : theme.deepTwilight} 
-                      strokeWidth="2.5" 
-                      strokeLinecap="round" 
-                      strokeLinejoin="round" 
-                      className="group-hover/fav:stroke-red-500 transition-colors duration-200"
-                    >
-                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                    </svg>
-                  </button>
+        {/* === SECTION 2: HOME APPLIANCES === */}
+        <div>
+          <div className="mb-6 border-b pb-4" style={{ borderColor: theme.frostedBlue }}>
+            <h2 className="text-xl font-black tracking-tight uppercase" style={{ color: theme.deepTwilight }}>
+              Home Appliances
+            </h2>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Premium interior upgrades for your modern home</p>
+          </div>
+          {renderProductGrid(applianceProducts)}
+        </div>
 
-                  <img 
-                    src={product.img} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-
-                {/* Card Body Container */}
-                <div className="p-5 flex flex-col flex-grow justify-between">
-                  
-                  {/* 2. MIDDLE SIDE: Category, Title, and Description */}
-                  <div className="mb-6">
-                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.turquoiseSurf }}>
-                      {product.category}
-                    </span>
-                    <h3 className="text-lg font-bold tracking-wide mt-1" style={{ color: theme.deepTwilight }}>
-                      {product.name}
-                    </h3>
-                    <p className="mt-2 text-sm text-slate-500 line-clamp-2 leading-relaxed">
-                      {product.desc}
-                    </p>
-                  </div>
-
-                  {/* 3. LOWER ROW: Price and Shop Now Button Actions */}
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    {/* Price Left Side */}
-                    <span className="text-xl font-black tracking-tight" style={{ color: theme.deepTwilight }}>
-                      {product.price}
-                    </span>
-                    
-                    {/* Shop Now Button Right Side */}
-                    <button 
-                      className="px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase transition-all duration-200 shadow-sm"
-                      style={{ backgroundColor: theme.brightTealBlue, color: theme.surface }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = theme.deepTwilight;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = theme.brightTealBlue;
-                      }}
-                      onClick={() => alert(`Redirecting to checkout for ${product.name}`)}
-                    >
-                      Shop Now
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-            );
-          })}
+        {/* === SECTION 3: TRENDING FASHION === */}
+        <div>
+          <div className="mb-6 border-b pb-4" style={{ borderColor: theme.frostedBlue }}>
+            <h2 className="text-xl font-black tracking-tight uppercase" style={{ color: theme.deepTwilight }}>
+              Trending Fashion
+            </h2>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">Curated lifestyle aesthetics for the seasonal look</p>
+          </div>
+          {renderProductGrid(fashionProducts)}
         </div>
 
       </div>

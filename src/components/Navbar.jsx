@@ -42,6 +42,27 @@ const Navbar = () => {
   return (
     <header className="w-full sticky top-0 z-50 shadow-sm bg-white select-none">
       
+      {/* 🔥 TOP LINE LOADER EFFECT */}
+      {/* Key is bound to location.key so the animation retriggers completely on every navigation click */}
+      <motion.div
+        key={location.key}
+        initial={{ scaleX: 0, opacity: 1 }}
+        animate={{ 
+          scaleX: [0, 0.3, 0.7, 1], 
+          opacity: [1, 1, 1, 0] 
+        }}
+        transition={{ 
+          duration: 0.6, 
+          times: [0, 0.2, 0.5, 1], 
+          ease: "easeInOut" 
+        }}
+        style={{ 
+          backgroundColor: theme.turquoiseSurf, 
+          transformOrigin: 'left' 
+        }}
+        className="absolute top-0 left-0 right-0 h-[3px] z-[60]"
+      />
+      
       {/* --- 1. TOP UTILITY BAR --- */}
       <div 
         style={{ backgroundColor: theme.lightCyan }} 
@@ -164,7 +185,6 @@ const Navbar = () => {
           )}
 
           {/* --- PROFILE SECTION FIXED FOR DESKTOP & MOBILE RESPONSIVENESS --- */}
-          {/* 🔥 'hidden sm:block' has been removed so it stays visible on mobile as well */}
           <div className="relative" ref={profileRef}>
             <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -183,7 +203,6 @@ const Navbar = () => {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 15, scale: 0.95 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  /* 🔥 Smart responsive alignments: right-[-40px] protects from clipping on mobile screen edges */
                   className="absolute right-[-40px] sm:right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 z-[60] text-left"
                 >
                   <div className="space-y-1 mb-4">
