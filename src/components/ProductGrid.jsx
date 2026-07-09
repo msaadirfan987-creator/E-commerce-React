@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; 
+import { useCart } from '../context/CartContext';
 
 const ProductGrid = () => {
+  const { addToCart } = useCart();
   const theme = {
     deepTwilight: '#03045e', 
     brightTealBlue: '#0077b6', 
@@ -66,7 +68,7 @@ const ProductGrid = () => {
               style={{ backgroundColor: theme.brightTealBlue }}
               onClick={(e) => {
                 e.preventDefault(); // Prevents navigating to single product page when clicking directly on button
-                alert(`${product.name} added to cart!`);
+                addToCart(product, 1);
               }}
             >
               Add to Cart

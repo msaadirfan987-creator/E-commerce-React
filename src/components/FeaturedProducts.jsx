@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
 
 const FeaturedProducts = () => {
+  const { addToCart } = useCart();
   // Color palette synchronized with your Cartify design scheme
   const theme = {
     deepTwilight: '#03045e',
@@ -170,9 +172,13 @@ const FeaturedProducts = () => {
                 <span className="text-base font-black tracking-tight" style={{ color: theme.deepTwilight }}>
                   {product.price}
                 </span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-slate-50 text-slate-400">
-                  In Stock
-                </span>
+                <button 
+                  onClick={() => addToCart(product, 1)}
+                  className="text-[11px] font-bold text-white px-3 py-1.5 rounded-xl active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md"
+                  style={{ backgroundColor: theme.brightTealBlue }}
+                >
+                  Add to Cart
+                </button>
               </div>
             </div>
           </div>

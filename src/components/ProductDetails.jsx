@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { addToCart } = useCart();
 
   // Central Mock Database for all single product profiles
   const productsDatabase = {
@@ -179,6 +181,7 @@ const ProductDetails = () => {
           <div className="flex gap-3">
             <button 
               disabled={product.stock === 0}
+              onClick={() => addToCart({ id: Number(id), ...product }, quantity)}
               className="flex-1 bg-[#0077b6] text-white font-bold text-sm py-3.5 rounded-xl hover:opacity-95 active:scale-[0.99] transition-all shadow-sm disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
             >
               {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}

@@ -3,11 +3,13 @@ import { Link, useLocation } from 'react-router-dom'; // 🔥 useLocation for ac
 import { motion, AnimatePresence } from 'framer-motion'; // 🔥 Framer motion premium effects
 import logo from '../assets/logo.png';
 import CartComponent from './CartComponent'; // Import the CartComponent
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const { cartCount } = useCart();
   
   // 🔥 Profile states and click outside tracking
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -173,12 +175,14 @@ const Navbar = () => {
               <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
               <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
             </svg>
-            <span 
-              style={{ backgroundColor: theme.brightTealBlue }} 
-              className="absolute top-0.5 right-0.5 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm animate-bounce"
-            >
-              3
-            </span>
+            {cartCount > 0 && (
+              <span 
+                style={{ backgroundColor: theme.brightTealBlue }} 
+                className="absolute top-0.5 right-0.5 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-sm animate-bounce"
+              >
+                {cartCount}
+              </span>
+            )}
           </button>
           {isCartOpen && (
             <CartComponent isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
