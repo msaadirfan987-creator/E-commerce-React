@@ -82,8 +82,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start the Express server to listen for incoming connections on the specified port
-app.listen(PORT, () => {
-  // Log message to system console confirming the server is actively running
-  console.log(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
-});
+// Start the Express server to listen for incoming connections on the specified port (if not on Vercel)
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    // Log message to system console confirming the server is actively running
+    console.log(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  });
+}
+
+// Export the app instance for Vercel serverless deployment
+module.exports = app;
