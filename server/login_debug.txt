@@ -1,0 +1,38 @@
+{
+  "attemptTime": "2026-07-30T18:35:48.782Z",
+  "enteredEmail": "msaadi1223333@gmail.com",
+  "enteredPassword": "123456789",
+  "normalizedEmail": "msaadi1223333@gmail.com",
+  "allDbUsers": [
+    {
+      "_id": "6a6b882384d74e7d3293c5b3",
+      "fullName": "Muhammad Saad",
+      "email": "msaadirfan987@gmail.com",
+      "password": "$2b$10$HrlBPomWEXNpG3jgJYiLreCVGKpeZgO9qoXbPYmcJXU9zMhrwDFTG",
+      "role": "customer",
+      "createdAt": "2026-07-30T17:21:39.807Z",
+      "updatedAt": "2026-07-30T18:29:05.493Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6b8993699740aa21d4c913",
+      "fullName": "Muhammad Saad",
+      "email": "msaadi1223333@gmail.com",
+      "password": "$2b$10$mwIePnShbVgvaBVOXv.y7.CJmlpT9obFTxbmpjon2kMpigNelpwha",
+      "role": "customer",
+      "createdAt": "2026-07-30T17:27:48.026Z",
+      "updatedAt": "2026-07-30T18:33:15.951Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6b8d13930eba6a391ec621",
+      "fullName": "saad",
+      "email": "saad123@gmail.com",
+      "password": "$2b$10$9eC6kk0JVsPDXgmIpc738eYBXNvNvo5kcsbI/0X2D8oidlEa9TkxG",
+      "role": "customer",
+      "createdAt": "2026-07-30T17:42:43.392Z",
+      "updatedAt": "2026-07-30T18:33:16.646Z",
+      "__v": 0
+    }
+  ]
+}

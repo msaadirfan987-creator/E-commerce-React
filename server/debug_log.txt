@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-07-30T18:18:01.978Z",
+  "users": [
+    {
+      "_id": "6a6b882384d74e7d3293c5b3",
+      "fullName": "Muhammad Saad",
+      "email": "msaadirfan987@gmail.com",
+      "password": "123456789",
+      "role": "customer",
+      "createdAt": "2026-07-30T17:21:39.807Z",
+      "updatedAt": "2026-07-30T17:21:39.807Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6b8993699740aa21d4c913",
+      "fullName": "Muhammad Saad",
+      "email": "msaadi1223333@gmail.com",
+      "password": "123456789",
+      "role": "customer",
+      "createdAt": "2026-07-30T17:27:48.026Z",
+      "updatedAt": "2026-07-30T17:27:48.026Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6b8d13930eba6a391ec621",
+      "fullName": "saad",
+      "email": "saad123@gmail.com",
+      "password": "111222333",
+      "role": "customer",
+      "createdAt": "2026-07-30T17:42:43.392Z",
+      "updatedAt": "2026-07-30T17:42:43.392Z",
+      "__v": 0
+    }
+  ]
+}
