@@ -2,7 +2,13 @@ const mongoose = require("mongoose");
 const dns = require("dns");
 
 // Force Node.js to use Google DNS to prevent querySrv connection issues on Windows
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
+try {
+    if (process.platform === "win32") {
+        dns.setServers(["8.8.8.8", "8.8.4.4"]);
+    }
+} catch (error) {
+    console.warn("Could not set DNS servers:", error.message);
+}
 
 const connectDB = async () => {
     try {
@@ -10,7 +16,10 @@ const connectDB = async () => {
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error(`MongoDB Connection Error: ${error.message}`);
-        process.exit(1);
+        // Do not crash the server in production/serverless environments
+        if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+            process.exit(1);
+        }
     }
 };
 
