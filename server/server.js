@@ -74,7 +74,7 @@ app.get("/api/test", (req, res) => {
 // Define a default base route to verify that the backend API server is online and running
 app.get("/", (req, res) => {
   // Send a simple plain text greeting confirming server status
-  res.send("Cartify Backend Running 🚀");
+  res.send("Cartify Backend Running 🚀 - Debug Version 2");
 });
 
 // Middleware to capture and handle any 404 Route Not Found errors
