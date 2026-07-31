@@ -180,7 +180,7 @@ const Navbar = () => {
                         </Link>
                         
                         <Link 
-                          to="/orders" 
+                          to="/my-orders" 
                           onClick={() => setIsProfileOpen(false)}
                           className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
                         >
@@ -194,6 +194,16 @@ const Navbar = () => {
                             className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-900 bg-slate-50 hover:bg-slate-100 transition-colors"
                           >
                             Seller Dashboard
+                          </Link>
+                        )}
+
+                        {user.role === 'admin' && (
+                          <Link 
+                            to="/admin/dashboard" 
+                            onClick={() => setIsProfileOpen(false)}
+                            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-950 bg-slate-100 hover:bg-slate-200 transition-colors"
+                          >
+                            Admin Dashboard
                           </Link>
                         )}
 

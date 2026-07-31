@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const { MongoClient } = require("mongodb");
+const { sendVerificationEmail } = require("../utils/emailService");
 
 // Helper function to generate JWT token containing user ID and role, signed with JWT_SECRET
 const generateToken = (id, role) => {
@@ -64,29 +65,31 @@ const signup = async (req, res) => {
       });
     }
 
+    // Generate a 6-digit verification code
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    // Expiration time set to 10 minutes from now
+    const verificationExpires = new Date(Date.now() + 10 * 60 * 1000);
+
     // Create a new user document in MongoDB (pre-save hook hashes password)
     const user = await User.create({
       fullName,
       email: normalizedEmail,
       password, // Bcryptjs will hash this automatically in the User schema pre-save hook
       role,
+      isVerified: false, // Must verify email first
+      verificationCode,
+      verificationExpires,
+      sellerStatus: role === "seller" ? "Pending" : "Approved", // Sellers are pending admin approval
     });
 
-    // Generate JWT token for the newly registered user
-    const token = generateToken(user._id, user.role);
+    // Send the verification code email
+    await sendVerificationEmail(user.email, verificationCode);
 
-    // Return a 201 Created response containing a success status, message, token, and user info (no password)
+    // Return a 201 Created response
     res.status(201).json({
       success: true,
-      message: "User registered successfully.",
-      token,
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt,
-      },
+      message: "Registration successful. Please verify your email using the 6-digit code sent to your inbox.",
+      email: user.email,
     });
   } catch (error) {
     // Return 500 Internal Server Error if something fails unexpectedly
@@ -157,6 +160,24 @@ const login = async (req, res) => {
       });
     }
 
+    // Check if the user is suspended
+    if (user.isBlocked) {
+      return res.status(401).json({
+        success: false,
+        message: "Your account has been suspended by the administrator.",
+      });
+    }
+
+    // Check if email has been verified
+    if (!user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        isUnverified: true,
+        email: user.email,
+        message: "Please verify your email address before logging in.",
+      });
+    }
+
     // Verify if the password matches the hashed password stored in the database
     const isMatch = await user.comparePassword(password);
     console.log(`[Login Info] Password Match: ${isMatch}`);
@@ -169,6 +190,10 @@ const login = async (req, res) => {
         message: "Invalid email or password.",
       });
     }
+
+    // Update last login timestamp
+    user.lastLogin = new Date();
+    await user.save();
 
     // Generate JWT token containing user ID and role for authorization
     const token = generateToken(user._id, user.role);
@@ -183,6 +208,8 @@ const login = async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         role: user.role,
+        sellerStatus: user.sellerStatus,
+        isBlocked: user.isBlocked,
       },
     });
   } catch (error) {
@@ -252,10 +279,122 @@ const testCreate = async (req, res) => {
   }
 };
 
+const verifyEmail = async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    const normalizedEmail = email ? email.toLowerCase().trim() : "";
+
+    if (!email || !code) {
+      return res.status(400).json({
+        success: false,
+        message: "Email address and 6-digit verification code are required.",
+      });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this email address.",
+      });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "This account has already been verified. Please log in.",
+      });
+    }
+
+    if (user.verificationCode !== code || user.verificationExpires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code.",
+      });
+    }
+
+    // Complete verification
+    user.isVerified = true;
+    user.verificationCode = null;
+    user.verificationExpires = null;
+    await user.save();
+
+    // Auto-login upon verification
+    const token = generateToken(user._id, user.role);
+
+    res.status(200).json({
+      success: true,
+      message: "Email verified successfully.",
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        sellerStatus: user.sellerStatus,
+        isBlocked: user.isBlocked,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error during verification: " + error.message,
+    });
+  }
+};
+
+const resendVerificationCode = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = email ? email.toLowerCase().trim() : "";
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email address is required to resend verification code.",
+      });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "No account found with this email address.",
+      });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "This account is already verified. Please log in.",
+      });
+    }
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    user.verificationCode = verificationCode;
+    user.verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    await user.save();
+
+    await sendVerificationEmail(user.email, verificationCode);
+
+    res.status(200).json({
+      success: true,
+      message: "Verification code sent successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error: " + error.message,
+    });
+  }
+};
+
 // Export the controller methods to be bound to auth routes
 module.exports = {
   signup,
   login,
   getDiagnosticUsers,
   testCreate,
+  verifyEmail,
+  resendVerificationCode,
 };

@@ -60,8 +60,16 @@ const AuthPage = () => {
 
       if (response.ok && data.success) {
         login(data.token, data.user);
-        const targetRoute = data.user.role === 'seller' ? '/dashboard' : '/';
-        const targetName = data.user.role === 'seller' ? 'Seller Dashboard' : 'Home Page';
+        let targetRoute = '/';
+        let targetName = 'Home Page';
+        
+        if (data.user.role === 'admin') {
+          targetRoute = '/admin/dashboard';
+          targetName = 'Admin Dashboard';
+        } else if (data.user.role === 'seller') {
+          targetRoute = '/dashboard';
+          targetName = 'Seller Dashboard';
+        }
 
         setSuccess(`Login successful. Redirecting to ${targetName}...`);
         setTimeout(() => {
@@ -70,7 +78,15 @@ const AuthPage = () => {
         }, 1500);
       } else {
         setLoading(false);
-        setError(data.message || 'Login failed. Verify email and password.');
+        if (data.isUnverified) {
+          setError(data.message || 'Please verify your email address.');
+          localStorage.setItem('unverified_email', loginEmail);
+          setTimeout(() => {
+            navigate('/verify-email', { state: { email: loginEmail } });
+          }, 1500);
+        } else {
+          setError(data.message || 'Login failed. Verify email and password.');
+        }
       }
     } catch (err) {
       setLoading(false);
@@ -121,14 +137,11 @@ const AuthPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        login(data.token, data.user);
-        const targetRoute = data.user.role === 'seller' ? '/dashboard' : '/';
-        const targetName = data.user.role === 'seller' ? 'Seller Dashboard' : 'Home Page';
-
-        setSuccess(`Registration successful. Redirecting to ${targetName}...`);
+        setSuccess('Registration successful. Redirecting to verification page...');
+        localStorage.setItem('unverified_email', signupEmail);
         setTimeout(() => {
           setLoading(false);
-          navigate(targetRoute);
+          navigate('/verify-email', { state: { email: signupEmail } });
         }, 1500);
       } else {
         setLoading(false);

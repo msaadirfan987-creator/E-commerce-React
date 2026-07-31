@@ -62,6 +62,10 @@ app.use("/api/products", productRoutes);
 const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
 
+// Mount admin routing middleware on the '/api/admin' path prefix
+const adminRoutes = require("./routes/adminRoutes");
+app.use("/api/admin", adminRoutes);
+
 // Temporary test route to check active routing
 app.get("/api/test", (req, res) => {
   res.json({

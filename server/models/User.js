@@ -30,14 +30,48 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
     },
-    // The user's role can either be 'customer' or 'seller', defaulting to 'customer'
+    // The user's role can be 'customer', 'seller', or 'admin'
     role: {
       type: String,
       enum: {
-        values: ["customer", "seller"],
-        message: "Role must be either customer or seller",
+        values: ["customer", "seller", "admin"],
+        message: "Role must be customer, seller, or admin",
       },
       default: "customer",
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationCode: {
+      type: String,
+      default: null,
+    },
+    verificationExpires: {
+      type: Date,
+      default: null,
+    },
+    sellerStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected", "Suspended"],
+      default: "Pending", // Default pending for sellers
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
+    approvedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    approvedAt: {
+      type: Date,
+      default: null,
+    },
+    lastLogin: {
+      type: Date,
+      default: null,
     },
   },
   {

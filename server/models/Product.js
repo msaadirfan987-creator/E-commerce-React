@@ -59,6 +59,11 @@ const productSchema = new mongoose.Schema(
       },
       default: "Active",
     },
+    visibility: {
+      type: String,
+      enum: ["Visible", "Hidden"],
+      default: "Visible",
+    },
   },
   {
     timestamps: true,

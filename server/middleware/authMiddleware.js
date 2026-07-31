@@ -31,6 +31,15 @@ const protect = async (req, res, next) => {
         });
       }
 
+      // Check if the user's account has been suspended by an Admin
+      if (req.user.isBlocked) {
+        return res.status(401).json({
+          success: false,
+          message: "Your account has been suspended by the administrator.",
+          isBlocked: true,
+        });
+      }
+
       // Proceed to the next middleware or request handler function in the pipeline
       next();
     } catch (error) {
@@ -74,8 +83,23 @@ const authorize = (...roles) => {
   };
 };
 
+/**
+ * @desc    Middleware to verify that a seller is approved by the admin
+ */
+const isApprovedSeller = (req, res, next) => {
+  if (req.user && req.user.role === "seller" && req.user.sellerStatus !== "Approved") {
+    return res.status(403).json({
+      success: false,
+      message: "Your seller account is pending approval from the administrator.",
+      isPendingSeller: true,
+    });
+  }
+  next();
+};
+
 // Export the middleware handlers for use in routes
 module.exports = {
   protect,
   authorize,
+  isApprovedSeller,
 };

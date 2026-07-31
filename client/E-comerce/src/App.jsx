@@ -9,6 +9,16 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderSuccess from './pages/OrderSuccess';
 import MyOrders from './pages/MyOrders';
 import OrderDetailsPage from './pages/OrderDetailsPage'; 
+import VerifyEmail from './pages/VerifyEmail';
+
+// Admin imports
+import AdminRoute from './components/AdminRoute';
+import AdminLayout from './pages/Admin/AdminLayout';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import UserManagement from './pages/Admin/UserManagement';
+import SellerApprovals from './pages/Admin/SellerApprovals';
+import ProductModeration from './pages/Admin/ProductModeration';
+import OrderModeration from './pages/Admin/OrderModeration';
 
 // Dashboard imports
 import ProtectedRoute from './components/ProtectedRoute';
@@ -56,6 +66,7 @@ function App() {
         <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/my-orders/:id" element={<OrderDetailsPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Route>
 
       {/* 2. Seller/Admin Dashboard Protected Routes Group */}
@@ -82,6 +93,22 @@ function App() {
         <Route path="messages" element={<MessagesPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="logout" element={<LogoutComponent />} />
+      </Route>
+
+      {/* 3. Administrative Panel Protected Routes Group */}
+      <Route 
+        path="/admin" 
+        element={
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        }
+      >
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="sellers" element={<SellerApprovals />} />
+        <Route path="products" element={<ProductModeration />} />
+        <Route path="orders" element={<OrderModeration />} />
       </Route>
     </Routes>
   );

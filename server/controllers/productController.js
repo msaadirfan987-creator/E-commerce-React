@@ -68,6 +68,11 @@ const getProducts = async (req, res) => {
   try {
     const query = {};
 
+    // Filter out hidden products for public storefront lists
+    if (!req.query.seller) {
+      query.visibility = { $ne: "Hidden" };
+    }
+
     // Filter by seller ID if provided (e.g. on My Products seller dashboard page)
     if (req.query.seller) {
       query.seller = req.query.seller;

@@ -66,8 +66,49 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  // Verify email address with 6-digit code
+  const verifyEmail = async (email, code) => {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, code }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        handleLogin(data.token, data.user);
+        return { success: true, message: data.message };
+      } else {
+        return { success: false, message: data.message || 'Verification failed.' };
+      }
+    } catch (error) {
+      return { success: false, message: 'Verification error: ' + error.message };
+    }
+  };
+
+  // Resend verification code
+  const resendCode = async (email) => {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/resend-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+      return { success: response.ok && data.success, message: data.message };
+    } catch (error) {
+      return { success: false, message: 'Server error: ' + error.message };
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login: handleLogin, logout: handleLogout }}>
+    <AuthContext.Provider value={{ user, token, loading, login: handleLogin, logout: handleLogout, verifyEmail, resendCode }}>
       {children}
     </AuthContext.Provider>
   );

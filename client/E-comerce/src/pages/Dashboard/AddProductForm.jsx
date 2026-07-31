@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import productService from '../../services/productService';
+import { useAuth } from '../../context/AuthContext';
 
 const AddProductForm = () => {
   const navigate = useNavigate();
@@ -65,6 +66,36 @@ const AddProductForm = () => {
       setError(err.response?.data?.message || 'Failed to submit product details to server.');
     }
   };
+
+  const { user } = useAuth();
+  const isApproved = user && (user.role === 'admin' || user.sellerStatus === 'Approved');
+
+  if (!isApproved) {
+    return (
+      <div className="max-w-2xl mx-auto py-12 text-center space-y-6 select-none font-sans animate-fadeIn">
+        <div className="bg-white border border-slate-200 p-8 rounded-lg shadow-xs space-y-4">
+          <div className="mx-auto w-12 h-12 bg-amber-50 rounded-full border border-amber-100 flex items-center justify-center text-amber-500">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          
+          <h2 className="text-sm font-bold text-slate-800 tracking-tight">Seller Account Pending</h2>
+          <p className="text-xs text-slate-400 font-bold max-w-xs mx-auto">
+            Your Seller Account is Pending Approval from Admin. You will be able to manage listings once approved.
+          </p>
+          <div className="pt-2">
+            <Link 
+              to="/dashboard" 
+              className="px-4 py-2 bg-slate-900 text-white font-bold text-xs rounded-lg hover:bg-slate-800 transition-colors inline-block"
+            >
+              Back to Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto select-none animate-fadeIn">

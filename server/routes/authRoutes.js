@@ -2,8 +2,8 @@
 const express = require("express");
 // Create a new router instance to define specific auth routes
 const router = express.Router();
-// Import the signup, login, diagnostic, and test-create functions from the auth controller
-const { signup, login, getDiagnosticUsers, testCreate } = require("../controllers/authController");
+// Import the auth functions from the auth controller
+const { signup, login, getDiagnosticUsers, testCreate, verifyEmail, resendVerificationCode } = require("../controllers/authController");
 // Import the protect middleware to secure authentication endpoints
 const { protect } = require("../middleware/authMiddleware");
 
@@ -16,6 +16,12 @@ router.post("/signup", signup);
 
 // Define a POST route for user login authentication and bind it to the login controller
 router.post("/login", login);
+
+// Route to verify email using 6-digit code
+router.post("/verify", verifyEmail);
+
+// Route to resend verification email code
+router.post("/resend-code", resendVerificationCode);
 
 // Define a GET route for fetching the logged-in user's profile, secured by JWT middleware
 router.get("/me", protect, (req, res) => {
