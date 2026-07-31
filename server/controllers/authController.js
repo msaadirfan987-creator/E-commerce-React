@@ -76,20 +76,27 @@ const signup = async (req, res) => {
       email: normalizedEmail,
       password, // Bcryptjs will hash this automatically in the User schema pre-save hook
       role,
-      isVerified: false, // Must verify email first
-      verificationCode,
-      verificationExpires,
+      isVerified: true,
       sellerStatus: role === "seller" ? "Pending" : "Approved", // Sellers are pending admin approval
     });
 
-    // Send the verification code email
-    await sendVerificationEmail(user.email, verificationCode);
+    // Generate JWT token containing user ID and role for authorization
+    const token = generateToken(user._id, user.role);
 
-    // Return a 201 Created response
+    // Return a 201 Created response with auto-login token
     res.status(201).json({
       success: true,
-      message: "Registration successful. Please verify your email using the 6-digit code sent to your inbox.",
-      email: user.email,
+      message: "Registration successful.",
+      token,
+      user: {
+        id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        sellerStatus: user.sellerStatus,
+        isBlocked: user.isBlocked,
+        isVerified: user.isVerified,
+      },
     });
   } catch (error) {
     // Return 500 Internal Server Error if something fails unexpectedly
@@ -168,15 +175,7 @@ const login = async (req, res) => {
       });
     }
 
-    // Check if email has been verified
-    if (!user.isVerified) {
-      return res.status(403).json({
-        success: false,
-        isUnverified: true,
-        email: user.email,
-        message: "Please verify your email address before logging in.",
-      });
-    }
+
 
     // Verify if the password matches the hashed password stored in the database
     const isMatch = await user.comparePassword(password);

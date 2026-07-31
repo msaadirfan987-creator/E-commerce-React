@@ -66,7 +66,6 @@ function App() {
         <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
         <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/my-orders/:id" element={<OrderDetailsPage />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
       </Route>
 
       {/* 2. Seller/Admin Dashboard Protected Routes Group */}
