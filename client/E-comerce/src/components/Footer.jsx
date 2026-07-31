@@ -3,107 +3,90 @@ import React, { useState } from 'react';
 const Footer = () => {
   const [email, setEmail] = useState('');
 
-  // Color palette synchronized perfectly with your Cartify design scheme
-  const theme = {
-    deepTwilight: '#03045e',
-    brightTealBlue: '#0077b6',
-    turquoiseSurf: '#00b4d8',
-    frostedBlue: '#90e0ef',
-    lightCyan: '#caf0f8',
-    surface: '#ffffff',
-    footerBg: '#02032e' // Custom extra-dark twilight variant for deep footer separation contrast
-  };
-
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email) {
-      alert(`Thank you for subscribing with: ${email}`);
+      alert(`Subscribed: ${email}`);
       setEmail('');
     }
   };
 
   return (
-    <footer className="w-full text-white pt-16 pb-8 select-none" style={{ backgroundColor: theme.footerBg }}>
+    <footer className="w-full text-slate-400 bg-slate-900 pt-12 pb-6 select-none border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-6">
         
-        {/* --- MAIN LINKS & NEWSLETTER GRID --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 border-b pb-12" style={{ borderColor: 'rgba(144, 224, 239, 0.15)' }}>
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 border-b border-slate-800 pb-8 text-xs font-semibold">
           
-          {/* Column 1: Brand Identifier Statement */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-2xl font-black tracking-wider uppercase" style={{ color: theme.lightCyan }}>
-              Cartify
+          {/* Column 1: Brand Info */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-bold text-white tracking-widest uppercase">
+              CARTIFY
             </h3>
-            <p className="text-sm text-slate-300 font-medium leading-relaxed max-w-xs">
-              Transforming your digital shopping experience with ultra-fast deliveries, premium verified product collections, and unparalleled customer security layers.
+            <p className="text-[11px] text-slate-400 leading-relaxed max-w-xs">
+              Providing premium ecommerce catalog spaces and secure checkout flows globally.
             </p>
             
-            {/* Social Icons Row */}
-            <div className="flex items-center gap-4 mt-2">
-              {['Facebook', 'Instagram', 'Twitter', 'LinkedIn'].map((platform, idx) => (
+            {/* Socials */}
+            <div className="flex items-center gap-2 pt-2">
+              {['Facebook', 'Instagram', 'Twitter'].map((platform, idx) => (
                 <button 
                   key={idx} 
-                  className="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
+                  className="px-2.5 py-1 rounded bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 hover:bg-slate-700/60 transition-all"
                   title={platform}
                 >
-                  <span className="text-xs font-bold text-slate-300 group-hover:text-white transition-colors">
-                    {platform[0]}
-                  </span>
+                  {platform[0]}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Column 2: Quick Links (Matches your updated Navbar profile links) */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-sm font-bold tracking-widest uppercase border-l-2 pl-3" style={{ borderColor: theme.turquoiseSurf, color: theme.lightCyan }}>
+          {/* Column 2: Navigation */}
+          <div className="space-y-3">
+            <h4 className="text-[10px] font-bold text-white tracking-widest uppercase">
               Navigation
             </h4>
-            <ul className="flex flex-col gap-2.5 text-sm font-medium text-slate-300">
+            <ul className="space-y-2 text-[11px] text-slate-400">
               <li><a href="#" className="hover:text-white transition-colors">Home</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Products</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Our Story / About Us</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Our Story</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
             </ul>
           </div>
 
-          {/* Column 3: Customer Care & Policy Framework */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-sm font-bold tracking-widest uppercase border-l-2 pl-3" style={{ borderColor: theme.turquoiseSurf, color: theme.lightCyan }}>
+          {/* Column 3: Customer Care */}
+          <div className="space-y-3">
+            <h4 className="text-[10px] font-bold text-white tracking-widest uppercase">
               Customer Support
             </h4>
-            <ul className="flex flex-col gap-2.5 text-sm font-medium text-slate-300">
-              <li><a href="#" className="hover:text-white transition-colors">Help Center / FAQs</a></li>
+            <ul className="space-y-2 text-[11px] text-slate-400">
+              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Track Your Order</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">30-Day Returns Policy</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Returns Policy</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
             </ul>
           </div>
 
-          {/* Column 4: Newsletter Box Section (Fulfilling structure point 10) */}
-          <div className="flex flex-col gap-4">
-            <h4 className="text-sm font-bold tracking-widest uppercase border-l-2 pl-3" style={{ borderColor: theme.turquoiseSurf, color: theme.lightCyan }}>
+          {/* Column 4: Newsletter */}
+          <div className="space-y-3">
+            <h4 className="text-[10px] font-bold text-white tracking-widest uppercase">
               Stay Updated
             </h4>
-            <p className="text-sm text-slate-300 font-medium leading-relaxed">
-              Subscribe to the Cartify newsletter loop to unlock early item drops and secret flash sale discount event pipelines.
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Subscribe to unlock product announcements and seasonal collections.
             </p>
-            <form onSubmit={handleSubscribe} className="w-full flex flex-col sm:flex-row gap-2 mt-1">
+            <form onSubmit={handleSubscribe} className="flex gap-2 pt-1 max-w-xs">
               <input 
                 type="email" 
                 required
-                placeholder="Enter your email" 
+                placeholder="Your email address" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 text-sm font-medium rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 bg-slate-50 transition-all"
-                style={{ '--tw-ring-color': theme.turquoiseSurf }}
+                className="w-full px-3 py-1.5 text-xs rounded bg-slate-800 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-slate-500 transition-all"
               />
               <button 
                 type="submit"
-                className="px-4 py-2 rounded-xl text-xs font-bold tracking-wider uppercase shrink-0 shadow-md transition-all duration-200 active:scale-95"
-                style={{ backgroundColor: theme.brightTealBlue, color: theme.surface }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.turquoiseSurf}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.brightTealBlue}
+                className="px-3 py-1.5 rounded bg-white text-slate-900 hover:bg-slate-100 text-xs font-bold transition-all shrink-0"
               >
                 Join
               </button>
@@ -112,13 +95,13 @@ const Footer = () => {
 
         </div>
 
-        {/* --- LOWER ROW: COPYRIGHT & TRUST FOOTNOTE --- */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs font-semibold text-slate-400 gap-4">
-          <p>© {new Date().getFullYear()} Cartify Inc. All rights reserved globally.</p>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-slate-300 cursor-pointer transition-colors">Privacy Shield</span>
-            <span className="hover:text-slate-300 cursor-pointer transition-colors">Accessibility Compliance</span>
-            <span className="hover:text-slate-300 cursor-pointer transition-colors">Cookie Configurations</span>
+        {/* Lower Row */}
+        <div className="pt-6 flex flex-col md:flex-row items-center justify-between text-[10px] font-medium text-slate-500 gap-3">
+          <p>© {new Date().getFullYear()} Cartify Inc. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <span className="hover:text-slate-400 cursor-pointer transition-colors">Privacy Shield</span>
+            <span className="hover:text-slate-400 cursor-pointer transition-colors">Accessibility</span>
+            <span className="hover:text-slate-400 cursor-pointer transition-colors">Cookie Settings</span>
           </div>
         </div>
 

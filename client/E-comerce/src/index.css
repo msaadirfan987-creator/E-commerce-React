@@ -1,37 +1,43 @@
 @import "tailwindcss";
 
-/* 
- * ==========================================
- * GLOBAL TACTILE CLICK FEEDBACK (MICRO-INTERACTIONS)
- * ==========================================
- * Applies a smooth, springy click scale-down and brightness reduction 
- * to all clickable/interactive elements (buttons, links, inputs, selects, etc.) 
- * to make the interface feel responsive, physical, and tactile.
- */
+/* Minimal, professional global focus ring and interaction styles */
+input, select, textarea {
+  @apply focus:ring-1 focus:ring-slate-900 focus:border-slate-900;
+}
 
+/* Subtle click feedback for interactive elements instead of bouncing */
 button,
 a,
 input[type="submit"],
 input[type="button"],
-input[type="reset"],
-[role="button"],
-select,
-summary {
-  transition: transform 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              filter 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  transform-origin: center;
+[role="button"] {
+  transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 button:active,
 a:active,
 input[type="submit"]:active,
 input[type="button"]:active,
-input[type="reset"]:active,
-[role="button"]:active,
-select:active,
-summary:active {
-  transform: scale(0.96) !important;
-  filter: brightness(0.92) !important;
-  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.05) !important;
+[role="button"]:active {
+  transform: scale(0.995);
+  opacity: 0.9;
+}
+
+/* Custom minimal scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

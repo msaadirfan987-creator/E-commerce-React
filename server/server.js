@@ -54,6 +54,10 @@ app.use(express.json());
 // Mount authentication routing middleware on the '/api/auth' path prefix
 app.use("/api/auth", authRoutes);
 
+// Mount product management routing middleware on the '/api/products' path prefix
+const productRoutes = require("./routes/productRoutes");
+app.use("/api/products", productRoutes);
+
 // Define a default base route to verify that the backend API server is online and running
 app.get("/", (req, res) => {
   // Send a simple plain text greeting confirming server status

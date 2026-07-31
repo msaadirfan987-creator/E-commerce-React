@@ -1,70 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import productService from '../services/productService';
 
 const ProductDetails = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
 
-  // Central Mock Database for all single product profiles
-  const productsDatabase = {
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  const [selectedImage, setSelectedImage] = useState(0); 
+  const [quantity, setQuantity] = useState(1); 
+  const [zoomStyle, setZoomStyle] = useState({ display: 'none', transformOrigin: 'center' });
+
+  const seedProducts = {
     "1": {
-      name: "Pro Wireless Noise Cancelling Headphones",
-      price: 129, originalPrice: 199, category: "Headphones & Audio", rating: 4.8, reviewCount: 124, stock: 15,
+      title: "Pro Wireless Noise Cancelling Headphones",
+      price: 129, discountPrice: 0, category: "Headphones & Audio", rating: 4.8, reviewCount: 124, stock: 15,
+      brand: "Premium Audio",
       images: [
         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80",
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&q=80",
-        "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&q=80"
-      ]
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&q=80"
+      ],
+      description: "Experience studio-quality audio with advanced active noise cancellation and ergonomic cushion pads."
     },
     "2": {
-      name: "Minimalist Leather Watch",
-      price: 199, originalPrice: 299, category: "Jewelry & Watches", rating: 4.6, reviewCount: 85, stock: 8,
+      title: "Minimalist Leather Watch",
+      price: 199, discountPrice: 0, category: "Jewelry & Watches", rating: 4.6, reviewCount: 85, stock: 8,
+      brand: "Chrono",
       images: [
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80",
-        "https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=600&q=80"
-      ]
-    },
-    "3": {
-      name: "Ergonomic Mechanical Keyboard",
-      price: 89, originalPrice: 120, category: "Laptops & PCs", rating: 4.7, reviewCount: 94, stock: 22,
-      images: [
-        "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&q=80",
-        "https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&q=80"
-      ]
-    },
-    "4": {
-      name: "Ultra HD Action Camera",
-      price: 249, originalPrice: 349, category: "Cameras", rating: 4.5, reviewCount: 43, stock: 4,
-      images: [
-        "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=600&q=80"
-      ]
-    },
-    "5": {
-      name: "Premium Hydro Skincare Serum",
-      price: 45, originalPrice: 60, category: "Skincare & Makeup", rating: 4.9, reviewCount: 210, stock: 50,
-      images: [
-        "https://images.unsplash.com/photo-1608248597481-496100c8c836?w=600&q=80"
-      ]
-    },
-    "6": {
-      name: "Smart Fitness Tracker v4",
-      price: 79, originalPrice: 110, category: "Smart Watches", rating: 4.4, reviewCount: 67, stock: 0,
-      images: [
-        "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=600&q=80"
-      ]
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80"
+      ],
+      description: "Elegant quartz movement chronometer watch featuring premium leather strap options."
     }
   };
 
-  const product = productsDatabase[id] || productsDatabase["1"];
-
-  // States
-  const [selectedImage, setSelectedImage] = useState(0); 
-  const [quantity, setQuantity] = useState(1); 
-  const [zoomStyle, setZoomStyle] = useState({ display: 'none', transformOrigin: 'center' }); 
-
-  // Reset image and quantity indices on product shift
   useEffect(() => {
+    const loadProduct = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        // If the ID is a mock index (like '1' or 'seed-1'), use seed fallback
+        if (seedProducts[id]) {
+          setProduct(seedProducts[id]);
+        } else if (id.startsWith('seed-')) {
+          const seedId = id.replace('seed-', '');
+          setProduct(seedProducts[seedId] || seedProducts["1"]);
+        } else {
+          const data = await productService.getProductById(id);
+          if (data.success && data.product) {
+            setProduct(data.product);
+          } else {
+            setError('Product not found in database.');
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load product details:', err);
+        setError('Error reaching backend catalog registry.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProduct();
     setSelectedImage(0);
     setQuantity(1);
   }, [id]);
@@ -78,7 +78,7 @@ const ProductDetails = () => {
     setZoomStyle({
       display: 'block',
       transformOrigin: `${x}% ${y}%`,
-      transform: 'scale(2)' 
+      transform: 'scale(1.5)' 
     });
   };
 
@@ -86,89 +86,128 @@ const ProductDetails = () => {
     setZoomStyle({ display: 'none' }); 
   };
 
+  if (loading) {
+    return (
+      <div className="py-20 text-center select-none">
+        <p className="text-slate-400 font-bold text-xs animate-pulse">Loading product specifications...</p>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="py-20 text-center select-none">
+        <p className="text-rose-500 font-bold text-xs">{error || 'Unable to view product details.'}</p>
+        <Link to="/" className="text-slate-900 text-xs font-bold underline mt-4 inline-block">Back Home</Link>
+      </div>
+    );
+  }
+
+  const imagesList = product.images && product.images.length > 0 ? product.images : ['https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&q=80'];
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 rounded-lg border border-slate-200 select-none">
       
       {/* LEFT COLUMN: IMAGES */}
       <div className="flex flex-col gap-4">
         {/* Main Big Image Box */}
         <div 
-          className="w-full aspect-square bg-slate-50 rounded-xl overflow-hidden relative cursor-zoom-in"
+          className="w-full aspect-square bg-slate-50 rounded-lg overflow-hidden relative cursor-zoom-in border border-slate-100"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
         >
           <img 
-            src={product.images[selectedImage]} 
-            alt={product.name}
+            src={imagesList[selectedImage]} 
+            alt={product.title}
             className="w-full h-full object-cover transition-transform duration-100"
             style={zoomStyle}
+            onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&q=80'; }}
           />
           {zoomStyle.display === 'none' && (
-            <img src={product.images[selectedImage]} className="w-full h-full object-cover absolute inset-0" alt="normal" />
+            <img 
+              src={imagesList[selectedImage]} 
+              className="w-full h-full object-cover absolute inset-0" 
+              alt="normal" 
+              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&q=80'; }}
+            />
           )}
         </div>
 
-        {/* Small Thumbnails Layer */}
-        {product.images.length > 1 && (
+        {/* Small Thumbnails */}
+        {imagesList.length > 1 && (
           <div className="flex gap-3">
-            {product.images.map((img, idx) => (
+            {imagesList.map((img, idx) => (
               <button 
                 key={idx}
                 onClick={() => setSelectedImage(idx)}
-                className={`w-20 h-20 rounded-lg overflow-hidden border-2 bg-slate-50 transition-all ${selectedImage === idx ? 'border-[#0077b6]' : 'border-transparent'}`}
+                className={`w-16 h-16 rounded-md overflow-hidden border bg-slate-50 transition-all ${selectedImage === idx ? 'border-slate-800' : 'border-slate-200'}`}
               >
-                <img src={img} className="w-full h-full object-cover" alt="thumb" />
+                <img 
+                  src={img} 
+                  className="w-full h-full object-cover" 
+                  alt="thumb" 
+                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=150&q=80'; }}
+                />
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* RIGHT COLUMN: TEXT INFOS & BUTTONS */}
+      {/* RIGHT COLUMN: DETAILS */}
       <div className="flex flex-col justify-between">
-        <div>
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wide block mb-1">{product.category}</span>
-          <h1 className="text-2xl font-black text-[#03045e] mb-2">{product.name}</h1>
+        <div className="space-y-4">
+          <div>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">{product.category}</span>
+            <h1 className="text-lg font-bold text-slate-900 mt-1">{product.title}</h1>
+            <span className="text-[10px] text-slate-400 font-bold block mt-1">Brand: {product.brand || 'Generic'}</span>
+          </div>
           
-          {/* Rating Section */}
-          <div className="flex items-center gap-2 mb-4 text-xs font-bold text-slate-500">
-            <span className="bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-md text-amber-500 flex items-center gap-1">
-              ★ {product.rating}
-            </span>
-            <span>({product.reviewCount} Reviews)</span>
+          {/* Rating */}
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+            <span className="text-amber-500">★ {product.rating || 5.0}</span>
+            <span>({product.reviewCount || 10} ratings)</span>
           </div>
 
-          {/* Pricing Box */}
-          <div className="flex items-baseline gap-3 mb-6">
-            <span className="text-2xl font-black text-[#03045e]">${product.price}</span>
-            <span className="text-sm font-semibold text-slate-400 line-through">${product.originalPrice}</span>
-            <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-md">
-              {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
-            </span>
+          {/* Pricing */}
+          <div className="flex items-baseline gap-2.5">
+            <span className="text-lg font-bold text-slate-900">${product.price}</span>
+            {product.discountPrice > 0 && (
+              <>
+                <span className="text-xs font-semibold text-slate-400 line-through">${product.discountPrice}</span>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">
+                  Sale Active
+                </span>
+              </>
+            )}
           </div>
 
           {/* Stock Alert */}
-          <p className="text-xs font-bold mb-6 flex items-center gap-2">
-            <span className={`h-2 w-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
+          <p className="text-[10px] font-bold flex items-center gap-1.5">
+            <span className={`h-1.5 w-1.5 rounded-full ${product.stock > 0 ? 'bg-emerald-500' : 'bg-rose-500'}`} />
             {product.stock > 0 ? `In Stock (${product.stock} items left)` : 'Out of Stock'}
           </p>
 
+          <p className="text-xs text-slate-500 leading-relaxed font-semibold">
+            {product.description}
+          </p>
+
           {/* Quantity Selector */}
-          <div className="mb-6 flex items-center gap-4">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Quantity:</span>
-            <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
+          <div className="flex items-center gap-4 pt-2">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Quantity:</span>
+            <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50 text-xs">
               <button 
                 onClick={() => setQuantity(q => Math.max(1, q - 1))}
                 disabled={product.stock === 0}
-                className="px-3 py-1.5 font-bold hover:bg-slate-100 transition-colors text-slate-600 disabled:opacity-40"
+                className="px-2.5 py-1 font-bold hover:bg-slate-100 transition-colors text-slate-600 disabled:opacity-40 cursor-pointer"
               >
                 -
               </button>
-              <span className="px-4 text-sm font-bold text-slate-800">{product.stock > 0 ? quantity : 0}</span>
+              <span className="px-3 font-bold text-slate-800">{product.stock > 0 ? quantity : 0}</span>
               <button 
                 onClick={() => setQuantity(q => Math.min(product.stock, q + 1))}
                 disabled={product.stock === 0}
-                className="px-3 py-1.5 font-bold hover:bg-slate-100 transition-colors text-slate-600 disabled:opacity-40"
+                className="px-2.5 py-1 font-bold hover:bg-slate-100 transition-colors text-slate-600 disabled:opacity-40 cursor-pointer"
               >
                 +
               </button>
@@ -176,25 +215,17 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        {/* Action Buttons Stack */}
-        <div className="flex flex-col gap-3 mt-4">
-          <div className="flex gap-3">
+        {/* Action Buttons */}
+        <div className="flex flex-col gap-2 pt-6">
+          <div className="flex gap-2">
             <button 
               disabled={product.stock === 0}
-              onClick={() => addToCart({ id: Number(id), ...product }, quantity)}
-              className="flex-1 bg-[#0077b6] text-white font-bold text-sm py-3.5 rounded-xl hover:opacity-95 active:scale-[0.99] transition-all shadow-sm disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed"
+              onClick={() => addToCart({ id: id, ...product }, quantity)}
+              className="flex-1 bg-slate-900 text-white font-bold text-xs py-2.5 rounded-lg hover:bg-slate-800 transition-colors shadow-sm disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed cursor-pointer"
             >
               {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
             </button>
-            <button className="px-4 border border-slate-200 rounded-xl hover:bg-slate-50 active:scale-[0.99] transition-all flex items-center justify-center">
-              ♡ 
-            </button>
           </div>
-          {product.stock > 0 && (
-            <button className="w-full bg-[#03045e] text-white font-bold text-sm py-3.5 rounded-xl hover:opacity-95 active:scale-[0.99] transition-all shadow-sm">
-              Buy Now
-            </button>
-          )}
         </div>
 
       </div>

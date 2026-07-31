@@ -1,34 +1,54 @@
 {
-  "timestamp": "2026-07-30T18:18:01.978Z",
+  "timestamp": "2026-07-31T10:46:15.846Z",
   "users": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
       "fullName": "Muhammad Saad",
       "email": "msaadirfan987@gmail.com",
-      "password": "123456789",
+      "password": "$2b$10$HrlBPomWEXNpG3jgJYiLreCVGKpeZgO9qoXbPYmcJXU9zMhrwDFTG",
       "role": "customer",
       "createdAt": "2026-07-30T17:21:39.807Z",
-      "updatedAt": "2026-07-30T17:21:39.807Z",
+      "updatedAt": "2026-07-30T18:29:05.493Z",
       "__v": 0
     },
     {
       "_id": "6a6b8993699740aa21d4c913",
       "fullName": "Muhammad Saad",
       "email": "msaadi1223333@gmail.com",
-      "password": "123456789",
+      "password": "$2b$10$mwIePnShbVgvaBVOXv.y7.CJmlpT9obFTxbmpjon2kMpigNelpwha",
       "role": "customer",
       "createdAt": "2026-07-30T17:27:48.026Z",
-      "updatedAt": "2026-07-30T17:27:48.026Z",
+      "updatedAt": "2026-07-30T18:33:15.951Z",
       "__v": 0
     },
     {
       "_id": "6a6b8d13930eba6a391ec621",
       "fullName": "saad",
       "email": "saad123@gmail.com",
-      "password": "111222333",
+      "password": "$2b$10$9eC6kk0JVsPDXgmIpc738eYBXNvNvo5kcsbI/0X2D8oidlEa9TkxG",
       "role": "customer",
       "createdAt": "2026-07-30T17:42:43.392Z",
-      "updatedAt": "2026-07-30T17:42:43.392Z",
+      "updatedAt": "2026-07-30T18:33:16.646Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6bbfacb4bed9903fc15a13",
+      "fullName": "Muhammad Saad",
+      "email": "3brothershero@gmail.com",
+      "password": "$2b$10$SaeWx6QvATvC/.wiT/mnLOzc/GFyPkhAXRjrVvvVR6WP7un0iapyy",
+      "role": "customer",
+      "createdAt": "2026-07-30T21:18:36.111Z",
+      "updatedAt": "2026-07-30T21:18:36.111Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6c726c09a3f348c5dca5da",
+      "fullName": "TAYYAB IRFAN",
+      "email": "tayyab123@gmail.com",
+      "password": "$2b$10$rTKDRAnXlxMlV0CywaQKieHD1005CkMl0vvEXEodfO/l55WshiNCC",
+      "role": "seller",
+      "createdAt": "2026-07-31T10:01:16.812Z",
+      "updatedAt": "2026-07-31T10:01:16.812Z",
       "__v": 0
     }
   ]

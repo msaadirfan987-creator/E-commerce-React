@@ -1,81 +1,112 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import { useCart } from '../context/CartContext';
+import productService from '../services/productService';
 
 const ProductGrid = () => {
   const { addToCart } = useCart();
-  const theme = {
-    deepTwilight: '#03045e', 
-    brightTealBlue: '#0077b6', 
-  };
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const mockProducts = [
-    { id: 1, name: 'Pro Wireless Headphones', price: 129, category: 'Headphones & Audio', rating: 4.8, img: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80' },
-    { id: 2, name: 'Minimalist Leather Watch', price: 199, category: 'Jewelry & Watches', rating: 4.6, img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80' },
-    { id: 3, name: 'Ergonomic Mechanical Keyboard', price: 89, category: 'Laptops & PCs', rating: 4.7, img: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&q=80' },
-    { id: 4, name: 'Ultra HD Action Camera', price: 249, category: 'Cameras', rating: 4.5, img: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80' },
-    { id: 5, name: 'Premium Hydro Skincare Serum', price: 45, category: 'Skincare & Makeup', rating: 4.9, img: 'https://images.unsplash.com/photo-1608248597481-496100c8c836?w=500&q=80' },
-    { id: 6, name: 'Smart Fitness Tracker v4', price: 79, category: 'Smart Watches', rating: 4.4, img: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&q=80' },
+    { id: 'mock-1', title: 'Pro Wireless Headphones', price: 129, category: 'Headphones & Audio', rating: 4.8, images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80'] },
+    { id: 'mock-2', title: 'Minimalist Leather Watch', price: 199, category: 'Jewelry & Watches', rating: 4.6, images: ['https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80'] },
+    { id: 'mock-3', title: 'Ergonomic Mechanical Keyboard', price: 89, category: 'Laptops & PCs', rating: 4.7, images: ['https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&q=80'] },
+    { id: 'mock-4', title: 'Ultra HD Action Camera', price: 249, category: 'Cameras', rating: 4.5, images: ['https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80'] },
+    { id: 'mock-5', title: 'Premium Hydro Skincare Serum', price: 45, category: 'Skincare & Makeup', rating: 4.9, images: ['https://images.unsplash.com/photo-1608248597481-496100c8c836?w=500&q=80'] },
+    { id: 'mock-6', title: 'Smart Fitness Tracker v4', price: 79, category: 'Smart Watches', rating: 4.4, images: ['https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&q=80'] },
   ];
 
+  useEffect(() => {
+    const loadAllProducts = async () => {
+      try {
+        const data = await productService.getProducts();
+        if (data.success) {
+          setProducts(data.products || []);
+        }
+      } catch (err) {
+        console.error('Failed to load shop products:', err);
+        setError('Connection issues loading catalog.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAllProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-20 text-center w-full select-none">
+        <p className="text-slate-400 font-bold text-xs animate-pulse">Loading catalog items...</p>
+      </div>
+    );
+  }
+
+  const items = products.length > 0 ? products : mockProducts;
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 w-full">
-      {mockProducts.map((product) => (
-        <Link 
-          to={`/product/${product.id}`} 
-          key={product.id} 
-          className="group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full cursor-pointer block"
-        >
-          {/* Product Image Wrapper */}
-          <div className="w-full aspect-square bg-slate-50 overflow-hidden relative">
-            <img 
-              src={product.img} 
-              alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-          </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 w-full select-none">
+      {items.map((product) => {
+        const productId = product._id || product.id;
+        const productImage = product.images && product.images.length > 0 ? product.images[0] : (product.img || 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=300&q=80');
 
-          {/* Product Info */}
-          <div className="p-5 flex flex-col flex-grow bg-white">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1 block">
-              {product.category} 
-            </span>
-            
-            <h4 
-              style={{ color: theme.deepTwilight }} 
-              className="font-bold text-sm line-clamp-2 mb-3 min-h-[40px] group-hover:text-[#0077b6] transition-colors"
-            >
-              {product.name} 
-            </h4>
-
-            {/* Price and Rating */}
-            <div className="flex items-center justify-between mt-auto mb-4">
-              <span style={{ color: theme.deepTwilight }} className="text-base font-black">
-                ${product.price} 
-              </span>
-              
-              <div className="flex items-center gap-1 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg text-amber-500 text-xs font-bold">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-                {product.rating} 
-              </div>
+        return (
+          <Link 
+            to={`/product/${productId}`} 
+            key={productId} 
+            className="group bg-white border border-slate-200 rounded-lg overflow-hidden transition-all hover:border-slate-350 flex flex-col h-full cursor-pointer block"
+          >
+            {/* Product Image Wrapper */}
+            <div className="w-full aspect-square bg-slate-50 overflow-hidden relative">
+              <img 
+                src={productImage} 
+                alt={product.title} 
+                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=300&q=80'; }}
+              />
             </div>
 
-            {/* Action Call Button */}
-            <button 
-              className="w-full text-white text-xs font-bold py-3 px-4 rounded-xl transition-all duration-200 active:scale-[0.98] mt-auto block shadow-sm"
-              style={{ backgroundColor: theme.brightTealBlue }}
-              onClick={(e) => {
-                e.preventDefault(); // Prevents navigating to single product page when clicking directly on button
-                addToCart(product, 1);
-              }}
-            >
-              Add to Cart
-            </button>
-          </div>
-        </Link>
-      ))}
+            {/* Product Info */}
+            <div className="p-4 flex flex-col flex-grow justify-between bg-white">
+              <div>
+                <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1 block">
+                  {product.category} 
+                </span>
+                
+                <h4 className="font-bold text-xs text-slate-800 line-clamp-2 leading-relaxed mb-3 group-hover:text-slate-950 transition-colors">
+                  {product.title} 
+                </h4>
+              </div>
+
+              {/* Price and Rating */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="text-xs font-black text-slate-900">
+                    ${product.price} 
+                  </span>
+                  
+                  <div className="flex items-center gap-1 text-slate-500 text-[10px] font-bold">
+                    ★ {product.rating || 5.0} 
+                  </div>
+                </div>
+
+                {/* Action Call Button */}
+                <button 
+                  className="w-full bg-slate-900 text-white text-[10px] font-bold py-2 rounded-lg transition-all hover:bg-slate-800 block shadow-sm cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault(); 
+                    addToCart(product, 1);
+                  }}
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 };
