@@ -1,8 +1,8 @@
 {
-  "attemptTime": "2026-07-31T17:43:41.198Z",
-  "enteredEmail": "admin@cartify.com",
-  "enteredPassword": "AdminPass123!",
-  "normalizedEmail": "admin@cartify.com",
+  "attemptTime": "2026-07-31T18:06:29.135Z",
+  "enteredEmail": "tayyab123@gmail.com",
+  "enteredPassword": "123123123",
+  "normalizedEmail": "tayyab123@gmail.com",
   "allDbUsers": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
@@ -82,9 +82,9 @@
       "isBlocked": false,
       "approvedBy": null,
       "approvedAt": null,
-      "lastLogin": "2026-07-31T17:07:32.513Z",
+      "lastLogin": "2026-07-31T17:45:09.813Z",
       "createdAt": "2026-07-31T16:57:25.918Z",
-      "updatedAt": "2026-07-31T17:07:32.519Z",
+      "updatedAt": "2026-07-31T17:45:09.818Z",
       "__v": 0
     },
     {
@@ -103,6 +103,24 @@
       "lastLogin": null,
       "createdAt": "2026-07-31T17:43:07.883Z",
       "updatedAt": "2026-07-31T17:43:07.883Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6cdf685c9a0d65ccf4b676",
+      "fullName": "IRFAN",
+      "email": "irfan12@gmail.com",
+      "password": "$2b$10$WhMRFGORMUjEXNMcQID8XehOETG7CnEo63yWJRpIoZEx6zC99brHS",
+      "role": "seller",
+      "isVerified": true,
+      "verificationCode": null,
+      "verificationExpires": null,
+      "sellerStatus": "Approved",
+      "isBlocked": false,
+      "approvedBy": "6a6cd3f54cd6e51d72d643a4",
+      "approvedAt": "2026-07-31T17:46:47.561Z",
+      "lastLogin": null,
+      "createdAt": "2026-07-31T17:46:16.697Z",
+      "updatedAt": "2026-07-31T17:46:47.562Z",
       "__v": 0
     }
   ]

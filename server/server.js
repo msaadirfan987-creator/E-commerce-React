@@ -70,6 +70,14 @@ app.use("/api/admin", adminRoutes);
 const dashboardRoutes = require("./routes/dashboardRoutes");
 app.use("/api/dashboard", dashboardRoutes);
 
+// Mount message and conversation routing middleware
+const messageRoutes = require("./routes/messageRoutes");
+app.use("/api", messageRoutes);
+
+// Mount reviews routing middleware
+const reviewRoutes = require("./routes/reviewRoutes");
+app.use("/api/reviews", reviewRoutes);
+
 // Temporary test route to check active routing
 app.get("/api/test", (req, res) => {
   res.json({
@@ -109,11 +117,39 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start the Express server to listen for incoming connections on the specified port (if not on Vercel)
+// Initialize HTTP Server and Socket.IO
+const http = require("http");
+const { Server } = require("socket.io");
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"]
+  }
+});
+
+io.on("connection", (socket) => {
+  // Join a private conversation channel
+  socket.on("join_room", (conversationId) => {
+    socket.join(conversationId);
+  });
+
+  // Broadcast message to recipients in the room
+  socket.on("send_message", (messageData) => {
+    io.to(messageData.conversation).emit("receive_message", messageData);
+  });
+
+  // Optional typing state indicator
+  socket.on("typing", (typingData) => {
+    socket.to(typingData.conversation).emit("typing_status", typingData);
+  });
+});
+
+// Start the server to listen for incoming connections
 if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
-  app.listen(PORT, () => {
-    // Log message to system console confirming the server is actively running
-    console.log(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  server.listen(PORT, () => {
+    console.log(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT} with Socket.IO enabled.`);
 
     // Temporary route printer to console logs (Express 5 app.router)
     console.log("=== REGISTERED ROUTES ===");

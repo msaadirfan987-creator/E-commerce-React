@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+.DS_Store
+client/E-comerce/node_modules/
+client/E-comerce/dist/
+server/node_modules/
