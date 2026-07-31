@@ -1,32 +1,20 @@
 import React, { useState } from 'react';
 
-const SalesChart = () => {
-  const [activeTab, setActiveTab] = useState('weekly');
+const SalesChart = ({ chartData }) => {
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
-  const weeklyData = [
-    { label: 'Mon', sales: 1200, orders: 15 },
-    { label: 'Tue', sales: 1900, orders: 22 },
-    { label: 'Wed', sales: 1400, orders: 18 },
-    { label: 'Thu', sales: 2500, orders: 30 },
-    { label: 'Fri', sales: 2200, orders: 25 },
-    { label: 'Sat', sales: 3400, orders: 42 },
-    { label: 'Sun', sales: 2900, orders: 35 },
-  ];
+  const formattedData = chartData && chartData.length > 0
+    ? chartData.map(d => ({
+        label: d._id && d._id.month ? d._id.month.slice(0, 3) : 'M',
+        sales: d.revenue || 0,
+        orders: d.ordersCount || 0
+      }))
+    : [
+        { label: 'No Data', sales: 0, orders: 0 }
+      ];
 
-  const monthlyData = [
-    { label: 'Jan', sales: 12000, orders: 150 },
-    { label: 'Feb', sales: 15000, orders: 190 },
-    { label: 'Mar', sales: 14000, orders: 180 },
-    { label: 'Apr', sales: 22000, orders: 280 },
-    { label: 'May', sales: 25000, orders: 310 },
-    { label: 'Jun', sales: 34000, orders: 420 },
-  ];
-
-  const chartData = activeTab === 'weekly' ? weeklyData : monthlyData;
-
-  const salesArray = chartData.map(d => d.sales);
-  const maxSales = Math.max(...salesArray) * 1.1;
+  const salesArray = formattedData.map(d => d.sales);
+  const maxSales = Math.max(...salesArray) * 1.1 || 100;
   const minSales = 0;
 
   const width = 500;
@@ -39,9 +27,9 @@ const SalesChart = () => {
   const chartWidth = width - paddingLeft - paddingRight;
   const chartHeight = height - paddingTop - paddingBottom;
 
-  const points = chartData.map((d, index) => {
-    const x = paddingLeft + (index / (chartData.length - 1)) * chartWidth;
-    const y = paddingTop + chartHeight - ((d.sales - minSales) / (maxSales - minSales)) * chartHeight;
+  const points = formattedData.map((d, index) => {
+    const x = paddingLeft + (index / (formattedData.length - 1 || 1)) * chartWidth;
+    const y = paddingTop + chartHeight - ((d.sales - minSales) / (maxSales - minSales || 1)) * chartHeight;
     return { x, y, ...d };
   });
 
@@ -69,26 +57,6 @@ const SalesChart = () => {
         <div className="space-y-0.5">
           <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Revenue Reports</h4>
           <p className="text-[11px] text-slate-500 font-semibold">Store income curves</p>
-        </div>
-        
-        {/* Toggle Selector */}
-        <div className="bg-slate-100 p-0.5 rounded flex items-center border border-slate-200/50">
-          <button 
-            onClick={() => { setActiveTab('weekly'); setHoveredIdx(null); }}
-            className={`px-2.5 py-1 text-[9px] font-bold rounded transition-all ${
-              activeTab === 'weekly' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-400 hover:text-slate-700'
-            }`}
-          >
-            Weekly
-          </button>
-          <button 
-            onClick={() => { setActiveTab('monthly'); setHoveredIdx(null); }}
-            className={`px-2.5 py-1 text-[9px] font-bold rounded transition-all ${
-              activeTab === 'monthly' ? 'bg-white text-slate-800 shadow-xs' : 'text-slate-400 hover:text-slate-700'
-            }`}
-          >
-            Monthly
-          </button>
         </div>
       </div>
 
@@ -173,9 +141,9 @@ const SalesChart = () => {
           {points.map((pt, i) => (
             <g key={i}>
               <rect 
-                x={pt.x - (chartWidth / chartData.length) / 2} 
+                x={pt.x - (chartWidth / (formattedData.length || 1)) / 2} 
                 y={paddingTop} 
-                width={chartWidth / chartData.length} 
+                width={chartWidth / (formattedData.length || 1)} 
                 height={chartHeight}
                 fill="transparent"
                 onMouseEnter={() => setHoveredIdx(i)}

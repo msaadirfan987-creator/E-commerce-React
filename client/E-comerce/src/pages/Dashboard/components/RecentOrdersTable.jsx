@@ -1,13 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const RecentOrdersTable = () => {
-  const orders = [
-    { id: '#ORD-9842', customer: 'John Doe', email: 'john@example.com', date: 'Jul 31, 2026', amount: '$129.00', status: 'Pending', statusColor: 'bg-slate-100 text-slate-700' },
-    { id: '#ORD-9841', customer: 'Alice Smith', email: 'alice@example.com', date: 'Jul 30, 2026', amount: '$249.00', status: 'Shipped', statusColor: 'bg-blue-50 text-blue-700' },
-    { id: '#ORD-9840', customer: 'Bob Johnson', email: 'bob@example.com', date: 'Jul 29, 2026', amount: '$89.00', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700' },
-    { id: '#ORD-9839', customer: 'Clara Oswald', email: 'clara@example.com', date: 'Jul 28, 2026', amount: '$45.00', status: 'Completed', statusColor: 'bg-emerald-50 text-emerald-700' },
-  ];
+const RecentOrdersTable = ({ orders }) => {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 'bg-slate-100 text-slate-700';
+      case 'Confirmed':
+        return 'bg-blue-550/10 text-blue-700';
+      case 'Packed':
+        return 'bg-amber-50 text-amber-700';
+      case 'Shipped':
+        return 'bg-indigo-50 text-indigo-700';
+      case 'Out For Delivery':
+        return 'bg-purple-50 text-purple-700';
+      case 'Delivered':
+        return 'bg-emerald-50 text-emerald-700';
+      case 'Cancelled':
+      case 'Rejected':
+        return 'bg-rose-50 text-rose-700';
+      default:
+        return 'bg-slate-100 text-slate-700';
+    }
+  };
+
+  const activeOrders = orders || [];
 
   return (
     <div className="bg-white border border-slate-200 rounded-lg p-5 shadow-xs w-full flex flex-col justify-between overflow-hidden select-none">
@@ -38,23 +55,31 @@ const RecentOrdersTable = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {orders.map((order, idx) => (
-              <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
-                <td className="py-3 px-3 text-xs font-bold text-slate-900">{order.id}</td>
-                <td className="py-3 px-3">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-bold text-slate-700">{order.customer}</span>
-                    <span className="text-[9px] text-slate-400 font-semibold">{order.email}</span>
-                  </div>
-                </td>
-                <td className="py-3 px-3 text-xs font-bold text-slate-800">{order.amount}</td>
-                <td className="py-3 px-3 text-right">
-                  <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold ${order.statusColor}`}>
-                    {order.status}
-                  </span>
+            {activeOrders.length > 0 ? (
+              activeOrders.map((order, idx) => (
+                <tr key={idx} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="py-3 px-3 text-xs font-bold text-slate-950 font-mono">#{order.orderNumber}</td>
+                  <td className="py-3 px-3">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-slate-700">{order.buyer?.fullName || 'Customer'}</span>
+                      <span className="text-[9px] text-slate-400 font-semibold">{order.buyer?.email}</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-3 text-xs font-bold text-slate-800">${order.totalPrice.toFixed(2)}</td>
+                  <td className="py-3 px-3 text-right">
+                    <span className={`inline-block px-2 py-0.5 rounded text-[9px] font-bold ${getStatusColor(order.orderStatus)}`}>
+                      {order.orderStatus}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="py-10 text-center text-xs font-bold text-slate-400">
+                  No Orders Found
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

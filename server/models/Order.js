@@ -82,6 +82,30 @@ const OrderSchema = new mongoose.Schema(
       ],
       default: "Pending",
     },
+    orderTotal: {
+      type: Number,
+      default: 0,
+    },
+    sellerRevenue: {
+      type: Number,
+      default: 0,
+    },
+    adminRevenue: {
+      type: Number,
+      default: 0,
+    },
+    orderDate: {
+      type: Date,
+      default: null,
+    },
+    month: {
+      type: String,
+      default: "",
+    },
+    year: {
+      type: Number,
+      default: null,
+    },
   },
   {
     timestamps: true,

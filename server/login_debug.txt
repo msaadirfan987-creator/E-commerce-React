@@ -1,5 +1,5 @@
 {
-  "attemptTime": "2026-07-31T17:07:32.334Z",
+  "attemptTime": "2026-07-31T17:43:41.198Z",
   "enteredEmail": "admin@cartify.com",
   "enteredPassword": "AdminPass123!",
   "normalizedEmail": "admin@cartify.com",
@@ -51,8 +51,13 @@
       "password": "$2b$10$rTKDRAnXlxMlV0CywaQKieHD1005CkMl0vvEXEodfO/l55WshiNCC",
       "role": "seller",
       "createdAt": "2026-07-31T10:01:16.812Z",
-      "updatedAt": "2026-07-31T10:01:16.812Z",
-      "__v": 0
+      "updatedAt": "2026-07-31T17:08:07.322Z",
+      "__v": 0,
+      "approvedAt": "2026-07-31T17:08:07.322Z",
+      "approvedBy": "6a6cd3f54cd6e51d72d643a4",
+      "isBlocked": false,
+      "isVerified": false,
+      "sellerStatus": "Approved"
     },
     {
       "_id": "6a6c8ed909a3f348c5dca5db",
@@ -77,9 +82,27 @@
       "isBlocked": false,
       "approvedBy": null,
       "approvedAt": null,
-      "lastLogin": null,
+      "lastLogin": "2026-07-31T17:07:32.513Z",
       "createdAt": "2026-07-31T16:57:25.918Z",
-      "updatedAt": "2026-07-31T16:57:25.918Z",
+      "updatedAt": "2026-07-31T17:07:32.519Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6cdeab5c9a0d65ccf4b671",
+      "fullName": "saad",
+      "email": "saad1111@gmail.com",
+      "password": "$2b$10$sfFw3IX5mIPHX6WvCQORwOmVRaMVpyUNJGXO8bFif1QIAA9yj5V9K",
+      "role": "customer",
+      "isVerified": true,
+      "verificationCode": null,
+      "verificationExpires": null,
+      "sellerStatus": "Approved",
+      "isBlocked": false,
+      "approvedBy": null,
+      "approvedAt": null,
+      "lastLogin": null,
+      "createdAt": "2026-07-31T17:43:07.883Z",
+      "updatedAt": "2026-07-31T17:43:07.883Z",
       "__v": 0
     }
   ]

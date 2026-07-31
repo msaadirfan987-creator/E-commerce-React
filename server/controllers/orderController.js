@@ -1,5 +1,6 @@
 const Order = require("../models/Order");
 const Product = require("../models/Product");
+const User = require("../models/User");
 
 // Helper to generate a unique order number
 const generateOrderNumber = () => {
@@ -84,13 +85,6 @@ const createOrder = async (req, res) => {
         shippingAddress,
         totalPrice,
       });
-
-      // Reduce stock for each product in this sub-order
-      for (const item of sellerItems) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity },
-        });
-      }
 
       createdOrders.push(order);
     }
@@ -241,11 +235,41 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
+    const previousStatus = order.orderStatus;
     order.orderStatus = status;
 
-    // COD is paid upon delivery, update payment status accordingly
+    // COD is paid upon delivery, update payment status and calculate revenue / decrease stock accordingly
     if (status === "Delivered") {
       order.paymentStatus = "Paid";
+      
+      // Run calculations ONLY if this is the first time the order is marked Delivered
+      if (previousStatus !== "Delivered") {
+        const orderTotal = order.totalPrice;
+        const sellerRevenue = orderTotal * 0.90;
+        const adminRevenue = orderTotal * 0.10;
+        
+        order.orderTotal = orderTotal;
+        order.sellerRevenue = sellerRevenue;
+        order.adminRevenue = adminRevenue;
+        order.orderDate = new Date();
+        order.month = new Date().toLocaleString("en-US", { month: "long" });
+        order.year = new Date().getFullYear();
+
+        // Increase Seller's accumulated revenue balance in the database
+        await User.findByIdAndUpdate(order.seller, {
+          $inc: { revenue: sellerRevenue }
+        });
+
+        // Decrease stock and increase sold count for each item
+        for (const item of order.items) {
+          await Product.findByIdAndUpdate(item.product, {
+            $inc: { 
+              stock: -item.quantity,
+              soldCount: item.quantity
+            }
+          });
+        }
+      }
     }
 
     await order.save();
@@ -296,16 +320,9 @@ const cancelOrder = async (req, res) => {
     order.orderStatus = "Cancelled";
     await order.save();
 
-    // Revert product stock
-    for (const item of order.items) {
-      await Product.findByIdAndUpdate(item.product, {
-        $inc: { stock: item.quantity },
-      });
-    }
-
     res.status(200).json({
       success: true,
-      message: "Order cancelled successfully and inventory reinstated.",
+      message: "Order cancelled successfully.",
       order,
     });
   } catch (error) {

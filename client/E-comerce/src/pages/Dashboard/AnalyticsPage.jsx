@@ -1,138 +1,168 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 const AnalyticsPage = () => {
-  const [deviceFilter, setDeviceFilter] = useState('All');
+  const { user, token } = useAuth();
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const trafficSources = [
-    { source: 'Direct Search', users: '12,490', percentage: '45%' },
-    { source: 'Social Campaigns', users: '6,280', percentage: '22%' },
-    { source: 'Referrals Network', users: '3,840', percentage: '14%' },
-    { source: 'Search Engine Index', users: '5,280', percentage: '19%' }
-  ];
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const isUserAdmin = user && user.role === 'admin';
+        const endpoint = isUserAdmin ? '/api/dashboard/admin' : '/api/dashboard/seller';
+        
+        const response = await fetch(`${API_URL}${endpoint}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const resData = await response.json();
+        if (response.ok && resData.success) {
+          setData(resData);
+        } else {
+          setError(resData.message || 'Failed to load system analytics.');
+        }
+      } catch (err) {
+        setError('Error connecting to backend services.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (token && user) {
+      fetchAnalytics();
+    }
+  }, [token, user]);
+
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center select-none">
+        <p className="text-slate-400 font-bold text-xs animate-pulse">Calculating database metrics...</p>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="bg-rose-50 border border-rose-100 text-rose-650 text-xs font-bold p-4 rounded-lg">
+        {error || 'Analytics reports could not be loaded.'}
+      </div>
+    );
+  }
+
+  const { stats } = data;
+
+  // Calculate Average Order Value (AOV)
+  const totalOrders = stats.totalOrders !== undefined ? stats.totalOrders : stats.ordersReceived || 0;
+  const deliveredCount = stats.deliveredOrders || 0;
+  const revenueVal = stats.totalRevenue || 0;
+  const aov = deliveredCount > 0 ? (revenueVal / deliveredCount) : 0;
+
+  // Render variables depending on role
+  const isPlatformAdmin = user && user.role === 'admin';
 
   return (
-    <div className="space-y-6 select-none animate-fadeIn">
+    <div className="space-y-6 select-none animate-fadeIn font-sans pb-12">
       
       {/* Title */}
-      <div className="pb-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-0.5">
-          <h2 className="text-lg font-bold text-slate-900 tracking-tight">System Analytics</h2>
-          <p className="text-xs text-slate-400 font-bold">Monitor incoming buyer traffic channels and interface performance metrics.</p>
-        </div>
-
-        <select
-          value={deviceFilter}
-          onChange={(e) => setDeviceFilter(e.target.value)}
-          className="text-xs font-bold text-slate-700 bg-white border border-slate-200 px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-slate-400 cursor-pointer self-start sm:self-auto"
-        >
-          <option value="All">All Platforms</option>
-          <option value="Mobile">Mobile Traffic</option>
-          <option value="Desktop">Desktop Console</option>
-        </select>
+      <div className="pb-4 border-b border-slate-200">
+        <h2 className="text-sm font-black text-slate-900 tracking-tight uppercase">System Analytics</h2>
+        <p className="text-xs text-slate-400 font-semibold">Monitor platform transaction ratios, order splits, and catalog distributions.</p>
       </div>
 
-      {/* Numerical Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 w-full">
-        <div className="bg-white border border-slate-200 p-4 rounded-lg">
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Conversion Rate</span>
-          <h3 className="text-base font-bold text-slate-900 mt-2">2.48%</h3>
-        </div>
+      {/* Analytics Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         
-        <div className="bg-white border border-slate-200 p-4 rounded-lg">
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Bounce Rate</span>
-          <h3 className="text-base font-bold text-slate-900 mt-2">41.2%</h3>
+        <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-xs">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Average Order Value</span>
+          <h3 className="text-base font-black text-slate-950 mt-1">${aov.toFixed(2)}</h3>
         </div>
 
-        <div className="bg-white border border-slate-200 p-4 rounded-lg">
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Average Session</span>
-          <h3 className="text-base font-bold text-slate-900 mt-2">4m 12s</h3>
+        <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-xs">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Delivered Rate</span>
+          <h3 className="text-base font-black text-slate-950 mt-1">
+            {totalOrders > 0 ? ((deliveredCount / totalOrders) * 100).toFixed(0) : 0}%
+          </h3>
         </div>
 
-        <div className="bg-white border border-slate-200 p-4 rounded-lg">
-          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Real-time Visitors</span>
-          <h3 className="text-base font-bold text-emerald-600 mt-2">12 Active</h3>
+        <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-xs">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Pending Volume</span>
+          <h3 className="text-base font-black text-slate-950 mt-1">{stats.pendingOrders || 0} Orders</h3>
         </div>
+
+        <div className="bg-white border border-slate-200 p-4 rounded-lg shadow-xs">
+          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Cancelled Ratio</span>
+          <h3 className="text-base font-black text-rose-600 mt-1">
+            {totalOrders > 0 ? (((stats.cancelledOrders || 0) / totalOrders) * 100).toFixed(0) : 0}%
+          </h3>
+        </div>
+
       </div>
 
-      {/* Traffic source logs */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Breakdowns */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        {/* Source Table */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 p-5 rounded-lg shadow-xs space-y-3">
-          <div className="pb-2 border-b border-slate-100">
-            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Traffic Sources</h4>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Where your store visitors arrive from</p>
-          </div>
-
-          <div className="overflow-x-auto w-full">
-            <table className="w-full text-left border-collapse text-xs font-semibold">
-              <thead>
-                <tr className="border-b border-slate-200 text-slate-400 text-[9px] font-bold uppercase tracking-wider">
-                  <th className="py-2 px-3">Traffic Channel</th>
-                  <th className="py-2 px-3">Sessions</th>
-                  <th className="py-2 px-3 text-right">Ratio</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
-                {trafficSources.map((t, i) => (
-                  <tr key={i} className="hover:bg-slate-50/50">
-                    <td className="py-3 px-3 font-bold">{t.source}</td>
-                    <td className="py-3 px-3">{t.users} users</td>
-                    <td className="py-3 px-3 text-right font-bold text-slate-900">{t.percentage}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Browser Stats */}
+        {/* Status progress distribution */}
         <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-xs space-y-4">
           <div className="pb-2 border-b border-slate-100">
-            <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Client Browsers</h4>
-            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Distribution percentages</p>
+            <h4 className="text-xs font-bold text-slate-805 uppercase tracking-wider">Order Status Distribution</h4>
+            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Ratio of orders across fulfillment states</p>
           </div>
 
-          <div className="space-y-4 pt-1">
-            <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-600 mb-1">
-                <span>Google Chrome</span>
-                <span className="font-bold text-slate-800">58%</span>
-              </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-slate-700 h-full rounded-full" style={{ width: '58%' }} />
-              </div>
-            </div>
+          <div className="space-y-3.5">
+            {[
+              { label: 'Delivered Orders', count: stats.deliveredOrders || 0, color: 'bg-emerald-600' },
+              { label: 'Pending Queue', count: stats.pendingOrders || 0, color: 'bg-slate-400' },
+              { label: 'Cancelled / Rejected', count: stats.cancelledOrders || 0, color: 'bg-rose-500' }
+            ].map((item, idx) => {
+              const countVal = item.count;
+              const ratio = totalOrders > 0 ? ((countVal / totalOrders) * 100).toFixed(0) : 0;
+              return (
+                <div key={idx} className="space-y-1 text-xs font-semibold">
+                  <div className="flex justify-between text-slate-700">
+                    <span>{item.label}</span>
+                    <span className="text-slate-400">{countVal} units ({ratio}%)</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div style={{ width: `${ratio}%` }} className={`h-full rounded-full ${item.color}`} />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
-            <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-600 mb-1">
-                <span>Apple Safari</span>
-                <span className="font-bold text-slate-800">24%</span>
-              </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-slate-700 h-full rounded-full" style={{ width: '24%' }} />
-              </div>
-            </div>
+        {/* Catalog distribution ratios */}
+        <div className="bg-white border border-slate-200 p-5 rounded-lg shadow-xs space-y-4">
+          <div className="pb-2 border-b border-slate-100">
+            <h4 className="text-xs font-bold text-slate-805 uppercase tracking-wider">Inventory Metrics</h4>
+            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">Distribution of products by listing and stock statuses</p>
+          </div>
 
-            <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-600 mb-1">
-                <span>Mozilla Firefox</span>
-                <span className="font-bold text-slate-800">12%</span>
-              </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-slate-700 h-full rounded-full" style={{ width: '12%' }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center text-xs font-semibold text-slate-600 mb-1">
-                <span>Other clients</span>
-                <span className="font-bold text-slate-800">6%</span>
-              </div>
-              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-slate-700 h-full rounded-full" style={{ width: '6%' }} />
-              </div>
-            </div>
+          <div className="space-y-3.5">
+            {[
+              { label: 'Total Catalog Size', count: stats.totalProducts || 0, color: 'bg-slate-700' },
+              { label: 'Low Stock Warnings', count: stats.lowStockProducts !== undefined ? stats.lowStockProducts : stats.lowStock || 0, color: 'bg-amber-500' },
+              { label: 'Out of Stock Listings', count: stats.outOfStockProducts !== undefined ? stats.outOfStockProducts : stats.outOfStock || 0, color: 'bg-rose-500' }
+            ].map((item, idx) => {
+              const maxVal = stats.totalProducts || 10;
+              const percentage = Math.min(100, Math.round((item.count / maxVal) * 100));
+              return (
+                <div key={idx} className="space-y-1 text-xs font-semibold">
+                  <div className="flex justify-between text-slate-700">
+                    <span>{item.label}</span>
+                    <span className="text-slate-400">{item.count} items</span>
+                  </div>
+                  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div style={{ width: `${percentage}%` }} className={`h-full rounded-full ${item.color}`} />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

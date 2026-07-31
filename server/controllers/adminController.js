@@ -409,12 +409,48 @@ const updateAdminOrderStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: "Order not found." });
     }
 
+    const previousStatus = order.orderStatus;
+
     if (orderStatus) {
       order.orderStatus = orderStatus;
     }
 
     if (paymentStatus) {
       order.paymentStatus = paymentStatus;
+    }
+
+    // COD is paid upon delivery, update payment status and calculate revenue / decrease stock accordingly
+    if (orderStatus === "Delivered") {
+      order.paymentStatus = "Paid";
+      
+      // Run calculations ONLY if this is the first time the order is marked Delivered
+      if (previousStatus !== "Delivered") {
+        const orderTotal = order.totalPrice;
+        const sellerRevenue = orderTotal * 0.90;
+        const adminRevenue = orderTotal * 0.10;
+        
+        order.orderTotal = orderTotal;
+        order.sellerRevenue = sellerRevenue;
+        order.adminRevenue = adminRevenue;
+        order.orderDate = new Date();
+        order.month = new Date().toLocaleString("en-US", { month: "long" });
+        order.year = new Date().getFullYear();
+
+        // Increase Seller's accumulated revenue balance in the database
+        await User.findByIdAndUpdate(order.seller, {
+          $inc: { revenue: sellerRevenue }
+        });
+
+        // Decrease stock and increase sold count for each item
+        for (const item of order.items) {
+          await Product.findByIdAndUpdate(item.product, {
+            $inc: { 
+              stock: -item.quantity,
+              soldCount: item.quantity
+            }
+          });
+        }
+      }
     }
 
     await order.save();

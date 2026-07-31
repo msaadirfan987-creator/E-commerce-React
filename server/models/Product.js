@@ -64,6 +64,10 @@ const productSchema = new mongoose.Schema(
       enum: ["Visible", "Hidden"],
       default: "Visible",
     },
+    soldCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

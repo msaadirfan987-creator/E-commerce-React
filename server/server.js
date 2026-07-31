@@ -66,6 +66,10 @@ app.use("/api/orders", orderRoutes);
 const adminRoutes = require("./routes/adminRoutes");
 app.use("/api/admin", adminRoutes);
 
+// Mount dashboard analytics routing middleware on the '/api/dashboard' path prefix
+const dashboardRoutes = require("./routes/dashboardRoutes");
+app.use("/api/dashboard", dashboardRoutes);
+
 // Temporary test route to check active routing
 app.get("/api/test", (req, res) => {
   res.json({
