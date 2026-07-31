@@ -62,6 +62,15 @@ app.use("/api/products", productRoutes);
 const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
 
+// Temporary test route to check active routing
+app.get("/api/test", (req, res) => {
+  res.json({
+    success: true,
+    message: "Test route is working on Railway!",
+    timestamp: new Date()
+  });
+});
+
 // Define a default base route to verify that the backend API server is online and running
 app.get("/", (req, res) => {
   // Send a simple plain text greeting confirming server status
@@ -97,6 +106,23 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
   app.listen(PORT, () => {
     // Log message to system console confirming the server is actively running
     console.log(`Server is running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+
+    // Temporary route printer to console logs (Express 5 app.router)
+    console.log("=== REGISTERED ROUTES ===");
+    if (app.router && app.router.stack) {
+      app.router.stack.forEach((layer) => {
+        if (layer.route) {
+          console.log(`Direct Route: ${Object.keys(layer.route.methods).join(', ').toUpperCase()} ${layer.route.path}`);
+        } else if (layer.name === 'router' && layer.handle && layer.handle.stack) {
+          layer.handle.stack.forEach((subLayer) => {
+            if (subLayer.route) {
+              console.log(`Sub Router Route: ${Object.keys(subLayer.route.methods).join(', ').toUpperCase()} ${layer.path}${subLayer.route.path}`);
+            }
+          });
+        }
+      });
+    }
+    console.log("=========================");
   });
 }
 
