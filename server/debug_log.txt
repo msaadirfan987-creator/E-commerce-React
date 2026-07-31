@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-31T10:46:15.846Z",
+  "timestamp": "2026-07-31T15:48:24.017Z",
   "users": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
@@ -49,6 +49,16 @@
       "role": "seller",
       "createdAt": "2026-07-31T10:01:16.812Z",
       "updatedAt": "2026-07-31T10:01:16.812Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6c8ed909a3f348c5dca5db",
+      "fullName": "hakjsdhckjashc",
+      "email": "aksjdhcksadc@gmail.com",
+      "password": "$2b$10$SQFvtK84mi6PtoObE.cuZOLNhYT9XCFlYIj6AcXo3IOgBJ7cTmPvG",
+      "role": "customer",
+      "createdAt": "2026-07-31T12:02:33.153Z",
+      "updatedAt": "2026-07-31T12:02:33.153Z",
       "__v": 0
     }
   ]

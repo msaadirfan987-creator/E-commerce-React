@@ -37,7 +37,8 @@ export const CartProvider = ({ children }) => {
   // Add item to cart
   const addToCart = (product, quantity = 1) => {
     setCartItems((prevItems) => {
-      const existingItemIndex = prevItems.findIndex((item) => item.id === product.id);
+      const productId = product.id || product._id;
+      const existingItemIndex = prevItems.findIndex((item) => item.id === productId);
       
       const parsedPrice = normalizePrice(product.price);
       // Determine the image to display: product might have `img` (string) or `images` (array)
@@ -56,11 +57,12 @@ export const CartProvider = ({ children }) => {
         return [
           ...prevItems,
           {
-            id: product.id,
-            name: product.name,
+            id: productId,
+            name: product.name || product.title,
             price: parsedPrice,
             img: imageSrc,
             quantity: quantity,
+            seller: product.seller,
           },
         ];
       }

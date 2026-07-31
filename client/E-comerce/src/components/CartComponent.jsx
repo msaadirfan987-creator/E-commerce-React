@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const CartComponent = ({ isOpen, onClose }) => {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const navigate = useNavigate();
   
   // Total price calculate karne ka function
   const calculateTotal = () => {
@@ -134,7 +136,11 @@ const CartComponent = ({ isOpen, onClose }) => {
                 
                 <button 
                   disabled={cartItems.length === 0}
-                  className="w-full bg-[#0077b6] disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-bold py-3 rounded-xl shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                  onClick={() => {
+                    onClose();
+                    navigate('/checkout');
+                  }}
+                  className="w-full bg-slate-900 disabled:bg-slate-350 disabled:cursor-not-allowed text-white text-[10px] font-bold py-2.5 rounded-lg transition-all cursor-pointer shadow-xs"
                 >
                   Proceed to Checkout
                 </button>

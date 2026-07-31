@@ -58,6 +58,10 @@ app.use("/api/auth", authRoutes);
 const productRoutes = require("./routes/productRoutes");
 app.use("/api/products", productRoutes);
 
+// Mount order management routing middleware on the '/api/orders' path prefix
+const orderRoutes = require("./routes/orderRoutes");
+app.use("/api/orders", orderRoutes);
+
 // Define a default base route to verify that the backend API server is online and running
 app.get("/", (req, res) => {
   // Send a simple plain text greeting confirming server status

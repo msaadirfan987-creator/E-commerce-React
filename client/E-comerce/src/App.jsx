@@ -5,6 +5,10 @@ import Home from './pages/home';
 import Shop from './pages/shop'; 
 import SingleProduct from './pages/SingleProduct';
 import AuthPage from './pages/AuthPage'; 
+import CheckoutPage from './pages/CheckoutPage';
+import OrderSuccess from './pages/OrderSuccess';
+import MyOrders from './pages/MyOrders';
+import OrderDetailsPage from './pages/OrderDetailsPage'; 
 
 // Dashboard imports
 import ProtectedRoute from './components/ProtectedRoute';
@@ -48,6 +52,10 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/product/:id" element={<SingleProduct />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
+        <Route path="/my-orders" element={<MyOrders />} />
+        <Route path="/my-orders/:id" element={<OrderDetailsPage />} />
       </Route>
 
       {/* 2. Seller/Admin Dashboard Protected Routes Group */}
