@@ -1,8 +1,8 @@
 {
-  "attemptTime": "2026-07-30T18:35:48.782Z",
-  "enteredEmail": "msaadi1223333@gmail.com",
-  "enteredPassword": "123456789",
-  "normalizedEmail": "msaadi1223333@gmail.com",
+  "attemptTime": "2026-07-31T15:34:54.796Z",
+  "enteredEmail": "tayyab123@gmail.com",
+  "enteredPassword": "123123123",
+  "normalizedEmail": "tayyab123@gmail.com",
   "allDbUsers": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
@@ -32,6 +32,36 @@
       "role": "customer",
       "createdAt": "2026-07-30T17:42:43.392Z",
       "updatedAt": "2026-07-30T18:33:16.646Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6bbfacb4bed9903fc15a13",
+      "fullName": "Muhammad Saad",
+      "email": "3brothershero@gmail.com",
+      "password": "$2b$10$SaeWx6QvATvC/.wiT/mnLOzc/GFyPkhAXRjrVvvVR6WP7un0iapyy",
+      "role": "customer",
+      "createdAt": "2026-07-30T21:18:36.111Z",
+      "updatedAt": "2026-07-30T21:18:36.111Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6c726c09a3f348c5dca5da",
+      "fullName": "TAYYAB IRFAN",
+      "email": "tayyab123@gmail.com",
+      "password": "$2b$10$rTKDRAnXlxMlV0CywaQKieHD1005CkMl0vvEXEodfO/l55WshiNCC",
+      "role": "seller",
+      "createdAt": "2026-07-31T10:01:16.812Z",
+      "updatedAt": "2026-07-31T10:01:16.812Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a6c8ed909a3f348c5dca5db",
+      "fullName": "hakjsdhckjashc",
+      "email": "aksjdhcksadc@gmail.com",
+      "password": "$2b$10$SQFvtK84mi6PtoObE.cuZOLNhYT9XCFlYIj6AcXo3IOgBJ7cTmPvG",
+      "role": "customer",
+      "createdAt": "2026-07-31T12:02:33.153Z",
+      "updatedAt": "2026-07-31T12:02:33.153Z",
       "__v": 0
     }
   ]
