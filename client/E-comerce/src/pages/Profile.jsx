@@ -112,7 +112,7 @@ const Profile = () => {
         logout();
         navigate('/auth');
       } else {
-        setError('Connection issues loading your profile details.');
+        setError(err.response?.data?.message || err.message || 'Connection issues loading your profile details.');
       }
     } finally {
       setLoading(false);
