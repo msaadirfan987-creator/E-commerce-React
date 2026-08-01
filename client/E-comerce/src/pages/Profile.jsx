@@ -170,6 +170,44 @@ const Profile = () => {
     );
   }
 
+  // If load finished but user remains null (e.g. backend failed), render error panel fallback
+  if (!user) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen bg-slate-50 py-20 text-center font-sans select-none animate-fadeIn">
+          <div className="max-w-md mx-auto bg-white border border-slate-200 p-8 rounded-2xl shadow-sm space-y-4">
+            <div className="mx-auto w-12 h-12 bg-rose-50 rounded-full border border-rose-100 flex items-center justify-center text-rose-500">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            
+            <h2 className="text-sm font-bold text-slate-800 tracking-tight">Profile Load Failed</h2>
+            <p className="text-xs text-slate-400 font-bold max-w-xs mx-auto">
+              We encountered an issue loading your profile details from the database. Please ensure you are logged in.
+            </p>
+            <div className="pt-2 flex justify-center gap-2">
+              <button 
+                onClick={loadProfileData} 
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-lg transition-colors cursor-pointer"
+              >
+                Retry Load
+              </button>
+              <Link 
+                to="/auth" 
+                className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-lg transition-colors inline-block"
+              >
+                Back to Login
+              </Link>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
   // Calculate order counters
   const getOrderCounts = (ordersList) => {
     return {
