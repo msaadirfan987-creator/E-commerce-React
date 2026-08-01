@@ -1,47 +1,50 @@
-import React from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
-import Navbar from './components/Navbar'; 
-import Home from './pages/home';
-import Shop from './pages/shop'; 
-import SingleProduct from './pages/SingleProduct';
-import AuthPage from './pages/AuthPage'; 
-import CheckoutPage from './pages/CheckoutPage';
-import OrderSuccess from './pages/OrderSuccess';
-import MyOrders from './pages/MyOrders';
-import OrderDetailsPage from './pages/OrderDetailsPage'; 
-import VerifyEmail from './pages/VerifyEmail';
+import { AnimatePresence } from 'framer-motion';
+import Navbar from './components/Navbar';
+import AppLoader from './components/loaders/AppLoader';
+import PageLoader from './components/loaders/PageLoader';
+
+const Home = lazy(() => import('./pages/home'));
+const Shop = lazy(() => import('./pages/shop'));
+const SingleProduct = lazy(() => import('./pages/SingleProduct'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrderSuccess = lazy(() => import('./pages/OrderSuccess'));
+const MyOrders = lazy(() => import('./pages/MyOrders'));
+const OrderDetailsPage = lazy(() => import('./pages/OrderDetailsPage'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 
 // Admin imports
-import AdminRoute from './components/AdminRoute';
-import AdminLayout from './pages/Admin/AdminLayout';
-import AdminDashboard from './pages/Admin/AdminDashboard';
-import UserManagement from './pages/Admin/UserManagement';
-import SellerApprovals from './pages/Admin/SellerApprovals';
-import ProductModeration from './pages/Admin/ProductModeration';
-import OrderModeration from './pages/Admin/OrderModeration';
+const AdminRoute = lazy(() => import('./components/AdminRoute'));
+const AdminLayout = lazy(() => import('./pages/Admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
+const UserManagement = lazy(() => import('./pages/Admin/UserManagement'));
+const SellerApprovals = lazy(() => import('./pages/Admin/SellerApprovals'));
+const ProductModeration = lazy(() => import('./pages/Admin/ProductModeration'));
+const OrderModeration = lazy(() => import('./pages/Admin/OrderModeration'));
+const ContactMessages = lazy(() => import('./pages/Admin/ContactMessages'));
 
 // Dashboard imports
-import ProtectedRoute from './components/ProtectedRoute';
-import DashboardLayout from './pages/Dashboard/DashboardLayout';
-import DashboardHome from './pages/Dashboard/DashboardHome';
-import ProductManagement from './pages/Dashboard/ProductManagement';
-import AddProductForm from './pages/Dashboard/AddProductForm';
-import EditProductPage from './pages/Dashboard/EditProductPage';
-import CategoriesManagement from './pages/Dashboard/CategoriesManagement';
-import OrdersManagement from './pages/Dashboard/OrdersManagement';
-import CustomersList from './pages/Dashboard/CustomersList';
-import ReviewsManagement from './pages/Dashboard/ReviewsManagement';
-import CouponsManagement from './pages/Dashboard/CouponsManagement';
-import InventoryManagement from './pages/Dashboard/InventoryManagement';
-import AnalyticsPage from './pages/Dashboard/AnalyticsPage';
-import EarningsPage from './pages/Dashboard/EarningsPage';
-import MessagesPage from './pages/Dashboard/MessagesPage';
-import SettingsPage from './pages/Dashboard/SettingsPage';
-import LogoutComponent from './pages/Dashboard/LogoutComponent';
-
-// Simple temporary placeholders for remaining pages so they don't break
-const About = () => <div className="p-12 text-center text-xl font-bold text-[#03045e]">About Us Page Coming Soon!</div>;
-const Contact = () => <div className="p-12 text-center text-xl font-bold text-[#03045e]">Contact Page Coming Soon!</div>;
+const ProtectedRoute = lazy(() => import('./components/ProtectedRoute'));
+const DashboardLayout = lazy(() => import('./pages/Dashboard/DashboardLayout'));
+const DashboardHome = lazy(() => import('./pages/Dashboard/DashboardHome'));
+const ProductManagement = lazy(() => import('./pages/Dashboard/ProductManagement'));
+const AddProductForm = lazy(() => import('./pages/Dashboard/AddProductForm'));
+const EditProductPage = lazy(() => import('./pages/Dashboard/EditProductPage'));
+const CategoriesManagement = lazy(() => import('./pages/Dashboard/CategoriesManagement'));
+const OrdersManagement = lazy(() => import('./pages/Dashboard/OrdersManagement'));
+const CustomersList = lazy(() => import('./pages/Dashboard/CustomersList'));
+const ReviewsManagement = lazy(() => import('./pages/Dashboard/ReviewsManagement'));
+const CouponsManagement = lazy(() => import('./pages/Dashboard/CouponsManagement'));
+const InventoryManagement = lazy(() => import('./pages/Dashboard/InventoryManagement'));
+const AnalyticsPage = lazy(() => import('./pages/Dashboard/AnalyticsPage'));
+const EarningsPage = lazy(() => import('./pages/Dashboard/EarningsPage'));
+const MessagesPage = lazy(() => import('./pages/Dashboard/MessagesPage'));
+const SettingsPage = lazy(() => import('./pages/Dashboard/SettingsPage'));
+const LogoutComponent = lazy(() => import('./pages/Dashboard/LogoutComponent'));
 
 // Layout for the main storefront pages sharing the storefront Navbar
 const ShopLayout = () => (
@@ -52,14 +55,38 @@ const ShopLayout = () => (
 );
 
 function App() {
+  const [appLoading, setAppLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setAppLoading(false), 2500);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (appLoading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [appLoading]);
+
   return (
-    <Routes>
-      {/* 1. Storefront Routes Group (wrapped in ShopLayout with global Navbar) */}
-      <Route element={<ShopLayout />}>
+    <>
+      <AnimatePresence>
+        {appLoading && <AppLoader />}
+      </AnimatePresence>
+      <Suspense fallback={<PageLoader message="Loading page content..." />}>
+        <Routes>
+          {/* 1. Storefront Routes Group (wrapped in ShopLayout with global Navbar) */}
+          <Route element={<ShopLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/messages" element={<MessagesPage />} />
         <Route path="/product/:id" element={<SingleProduct />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
@@ -108,8 +135,11 @@ function App() {
         <Route path="sellers" element={<SellerApprovals />} />
         <Route path="products" element={<ProductModeration />} />
         <Route path="orders" element={<OrderModeration />} />
+        <Route path="contacts" element={<ContactMessages />} />
       </Route>
     </Routes>
+      </Suspense>
+    </>
   );
 }
 

@@ -5,6 +5,7 @@ import logo from '../assets/logo.png';
 import CartComponent from './CartComponent';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import messageService from '../services/messageService';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +19,8 @@ const Navbar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
 
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -27,6 +30,27 @@ const Navbar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadMessagesCount(0);
+      return;
+    }
+    const fetchUnread = async () => {
+      try {
+        const data = await messageService.getConversations();
+        if (data.success) {
+          const count = data.conversations.reduce((sum, c) => sum + (c.unreadCount || 0), 0);
+          setUnreadMessagesCount(count);
+        }
+      } catch (err) {
+        console.error('Failed to load unread messages:', err);
+      }
+    };
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 15000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const isActive = (path) => location.pathname === path;
 
@@ -182,9 +206,25 @@ const Navbar = () => {
                         <Link 
                           to="/my-orders" 
                           onClick={() => setIsProfileOpen(false)}
-                          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-650 hover:bg-slate-50 transition-colors"
                         >
                           My Orders
+                        </Link>
+
+                        <Link 
+                          to="/messages" 
+                          onClick={() => setIsProfileOpen(false)}
+                          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-650 hover:bg-slate-50 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400 shrink-0">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                          </svg>
+                          Messages
+                          {unreadMessagesCount > 0 && (
+                            <span className="ml-auto bg-slate-900 text-white text-[8px] font-black h-4 w-4 rounded-full flex items-center justify-center border border-white">
+                              {unreadMessagesCount}
+                            </span>
+                          )}
                         </Link>
 
                         {user.role === 'seller' && (

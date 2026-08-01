@@ -4,6 +4,7 @@ import { Search, RefreshCcw } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import productService from '../../services/productService';
 import AllProductsTable from './components/AllProductsTable';
+import TableSkeleton from '../../components/loaders/TableSkeleton';
 
 const ProductManagement = () => {
   const { user } = useAuth();
@@ -147,8 +148,8 @@ const ProductManagement = () => {
 
       {/* Grid Table */}
       {loading ? (
-        <div className="py-12 text-center">
-          <p className="text-slate-400 font-bold text-xs animate-pulse">Loading catalog indexes...</p>
+        <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-xs">
+          <TableSkeleton rows={5} cols={5} />
         </div>
       ) : filtered.length > 0 ? (
         <AllProductsTable products={filtered} onDelete={handleDelete} />

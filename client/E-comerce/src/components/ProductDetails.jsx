@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import productService from '../services/productService';
+import ProductSkeleton from './loaders/ProductSkeleton';
+import ImageLoader from './loaders/ImageLoader';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -87,11 +89,7 @@ const ProductDetails = () => {
   };
 
   if (loading) {
-    return (
-      <div className="py-20 text-center select-none">
-        <p className="text-slate-400 font-bold text-xs animate-pulse">Loading product specifications...</p>
-      </div>
-    );
+    return <ProductSkeleton />;
   }
 
   if (error || !product) {
@@ -124,11 +122,11 @@ const ProductDetails = () => {
             onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&q=80'; }}
           />
           {zoomStyle.display === 'none' && (
-            <img 
+            <ImageLoader 
               src={imagesList[selectedImage]} 
-              className="w-full h-full object-cover absolute inset-0" 
+              className="w-full h-full absolute inset-0" 
+              imgClassName="object-cover w-full h-full animate-fadeIn"
               alt="normal" 
-              onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=600&q=80'; }}
             />
           )}
         </div>
@@ -225,6 +223,15 @@ const ProductDetails = () => {
             >
               {product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
             </button>
+            <Link 
+              to={`/messages?sellerId=${product.seller?._id || product.seller}&productId=${product._id || id}`}
+              className="flex-1 border border-slate-200 hover:border-slate-350 hover:bg-slate-50 text-slate-850 font-bold text-xs py-2.5 rounded-lg text-center transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-500">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Message Seller
+            </Link>
           </div>
         </div>
 

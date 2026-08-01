@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, UserCheck, ShieldAlert, ShoppingBag, ShoppingCart, LogOut, ExternalLink, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Users, UserCheck, ShieldAlert, ShoppingBag, ShoppingCart, LogOut, ExternalLink, Menu, X, Mail } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminLayout = () => {
@@ -15,6 +15,7 @@ const AdminLayout = () => {
     { name: 'Seller approvals', path: '/admin/sellers', icon: UserCheck },
     { name: 'Product catalog', path: '/admin/products', icon: ShoppingBag },
     { name: 'Platform orders', path: '/admin/orders', icon: ShoppingCart },
+    { name: 'Contact Messages', path: '/admin/contacts', icon: Mail },
   ];
 
   const handleLogoutClick = () => {

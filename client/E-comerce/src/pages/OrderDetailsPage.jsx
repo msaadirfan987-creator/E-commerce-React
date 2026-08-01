@@ -428,13 +428,13 @@ const OrderDetailsPage = () => {
 
               {/* Chat and Review Triggers */}
               <div className="pt-2 flex flex-col gap-2">
-                <button
-                  onClick={() => setShowChat(true)}
+                <Link
+                  to={`/messages?sellerId=${order.seller?._id || order.seller}&productId=${order.items[0]?.product?._id || order.items[0]?.product}&orderId=${order._id}`}
                   className="w-full py-2 bg-slate-950 hover:bg-slate-800 text-white rounded-lg font-bold text-xs text-center flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
-                  Contact Seller
-                </button>
+                  Message Seller
+                </Link>
 
                 {isDelivered && (
                   <button

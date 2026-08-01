@@ -78,6 +78,10 @@ app.use("/api", messageRoutes);
 const reviewRoutes = require("./routes/reviewRoutes");
 app.use("/api/reviews", reviewRoutes);
 
+// Mount contact messages routing middleware
+const contactRoutes = require("./routes/contactRoutes");
+app.use("/api/contacts", contactRoutes);
+
 // Temporary test route to check active routing
 app.get("/api/test", (req, res) => {
   res.json({

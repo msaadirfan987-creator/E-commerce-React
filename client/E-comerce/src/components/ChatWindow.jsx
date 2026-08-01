@@ -2,17 +2,35 @@ import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { Send, X, ArrowDown } from 'lucide-react';
 import messageService from '../services/messageService';
+import { useAuth } from '../context/AuthContext';
 
 const ChatWindow = ({ orderId, sellerName, onClose }) => {
+  const { user } = useAuth();
+  const userId = user?._id || user?.id || localStorage.getItem('userId');
+
   const [messages, setMessages] = useState([]);
   const [conversation, setConversation] = useState(null);
   const [inputVal, setInputVal] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [receiverTyping, setReceiverTyping] = useState(false);
 
   const socketRef = useRef(null);
+
+  const getSenderName = (senderId) => {
+    if (senderId === userId) return `${user?.fullName || 'You'} (You)`;
+    if (conversation) {
+      if (conversation.buyer && (senderId === conversation.buyer._id || senderId === conversation.buyer)) {
+        return conversation.buyer.fullName || 'Buyer';
+      }
+      if (conversation.seller && (senderId === conversation.seller._id || senderId === conversation.seller)) {
+        return conversation.seller.fullName || sellerName || 'Seller';
+      }
+    }
+    return sellerName || 'Support';
+  };
   const messagesEndRef = useRef(null);
   const token = localStorage.getItem('token');
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -74,7 +92,7 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
 
     // Listen for typing indicator
     socketRef.current.on('typing_status', (data) => {
-      if (data.sender !== localStorage.getItem('userId')) {
+      if (data.sender !== userId) {
         setReceiverTyping(data.isTyping);
       }
     });
@@ -104,7 +122,7 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
       setIsTyping(true);
       socketRef.current.emit('typing', {
         conversation: conversation._id,
-        sender: localStorage.getItem('userId'),
+        sender: userId,
         isTyping: true,
       });
     }
@@ -116,7 +134,7 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
       if (timeNow - lastTypingTime >= 2000 && isTyping) {
         socketRef.current.emit('typing', {
           conversation: conversation._id,
-          sender: localStorage.getItem('userId'),
+          sender: userId,
           isTyping: false,
         });
         setIsTyping(false);
@@ -131,9 +149,13 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
 
     const messageText = inputVal.trim();
     setInputVal('');
+    setSending(true);
 
     try {
       if (conversation) {
+        // Clear old message errors before sending
+        setError('');
+
         // Send via REST and emit via Socket
         const res = await messageService.sendMessage({
           conversationId: conversation._id,
@@ -147,7 +169,7 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
             socketRef.current.emit('send_message', sentMsg);
             socketRef.current.emit('typing', {
               conversation: conversation._id,
-              sender: localStorage.getItem('userId'),
+              sender: userId,
               isTyping: false,
             });
           }
@@ -168,6 +190,8 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
     } catch (err) {
       console.error('Failed to send message:', err);
       setError('Message delivery failed.');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -199,12 +223,16 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
           </div>
         ) : messages.length > 0 ? (
           messages.map((m, idx) => {
-            const isMe = m.sender === localStorage.getItem('userId');
+            const isMe = m.sender === userId;
+            const senderLabel = getSenderName(m.sender);
             return (
               <div 
                 key={idx} 
                 className={`flex flex-col max-w-[80%] gap-0.5 ${isMe ? 'ml-auto items-end' : 'mr-auto items-start'}`}
               >
+                <span className="text-[8px] font-semibold text-slate-500 uppercase tracking-wide">
+                  {senderLabel}
+                </span>
                 <div className={`p-2.5 rounded-lg text-xs leading-relaxed font-semibold border ${
                   isMe 
                     ? 'bg-slate-950 text-white border-slate-900 rounded-tr-none' 
@@ -232,7 +260,7 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
 
         {receiverTyping && (
           <div className="text-slate-400 text-[9px] font-bold animate-pulse">
-            Merchant is typing...
+            {conversation?.seller?._id === userId ? 'Buyer is typing...' : 'Seller is typing...'}
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -249,9 +277,10 @@ const ChatWindow = ({ orderId, sellerName, onClose }) => {
         />
         <button 
           type="submit"
-          className="p-2 bg-slate-950 hover:bg-slate-800 text-white rounded-lg shadow-sm transition-colors cursor-pointer shrink-0"
+          disabled={sending}
+          className={`p-2 rounded-lg shadow-sm transition-colors shrink-0 ${sending ? 'bg-slate-500 cursor-not-allowed' : 'bg-slate-950 hover:bg-slate-800 text-white'}`}
         >
-          <Send className="w-3.5 h-3.5" />
+          {sending ? <span className="text-[10px] font-bold">Sending...</span> : <Send className="w-3.5 h-3.5" />}
         </button>
       </form>
     </div>

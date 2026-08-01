@@ -9,7 +9,7 @@ const Order = require("../models/Order");
  */
 const createMessage = async (req, res) => {
   try {
-    const { orderId, message, conversationId } = req.body;
+    const { orderId, productId, sellerId, message, conversationId } = req.body;
 
     if (!message || !message.trim()) {
       return res.status(400).json({ success: false, message: "Message content cannot be blank." });
@@ -21,6 +21,27 @@ const createMessage = async (req, res) => {
       conversation = await Conversation.findById(conversationId);
       if (!conversation) {
         return res.status(404).json({ success: false, message: "Conversation not found." });
+      }
+    } else if (productId && sellerId) {
+      // Find or create conversation by buyer, seller, product, and optional order
+      const query = {
+        buyer: req.user.id,
+        seller: sellerId,
+        product: productId,
+        order: orderId || null,
+      };
+
+      conversation = await Conversation.findOne(query);
+
+      if (!conversation) {
+        conversation = await Conversation.create({
+          buyer: req.user.id,
+          seller: sellerId,
+          product: productId,
+          order: orderId || null,
+          lastMessage: message,
+          lastMessageTime: new Date(),
+        });
       }
     } else if (orderId) {
       const order = await Order.findById(orderId);
@@ -36,11 +57,14 @@ const createMessage = async (req, res) => {
         return res.status(403).json({ success: false, message: "Access forbidden. You do not own this order transaction." });
       }
 
-      // Get or create conversation
+      // Determine product context: use first item if present
+      const firstProduct = order.items && order.items.length > 0 ? order.items[0].product : null;
+
       conversation = await Conversation.findOne({
         buyer: order.buyer,
         seller: order.seller,
         order: order._id,
+        product: firstProduct,
       });
 
       if (!conversation) {
@@ -48,12 +72,13 @@ const createMessage = async (req, res) => {
           buyer: order.buyer,
           seller: order.seller,
           order: order._id,
+          product: firstProduct,
           lastMessage: message,
           lastMessageTime: new Date(),
         });
       }
     } else {
-      return res.status(400).json({ success: false, message: "Please specify either orderId or conversationId." });
+      return res.status(400).json({ success: false, message: "Please specify either conversationId, orderId, or both productId and sellerId." });
     }
 
     // Determine receiver
@@ -71,6 +96,8 @@ const createMessage = async (req, res) => {
       sender: req.user.id,
       receiver,
       message,
+      order: conversation.order || null,
+      product: conversation.product || null,
     });
 
     // Update conversation summary details
@@ -78,10 +105,17 @@ const createMessage = async (req, res) => {
     conversation.lastMessageTime = new Date();
     await conversation.save();
 
+    // Populate the conversation for rich client response
+    const populatedConversation = await Conversation.findById(conversation._id)
+      .populate("buyer", "fullName email")
+      .populate("seller", "fullName email")
+      .populate("order", "orderNumber orderStatus")
+      .populate("product", "title images price");
+
     res.status(201).json({
       success: true,
       message: newMessage,
-      conversation,
+      conversation: populatedConversation,
     });
   } catch (error) {
     res.status(500).json({
@@ -139,6 +173,7 @@ const getUserConversations = async (req, res) => {
       .populate("buyer", "fullName email")
       .populate("seller", "fullName email")
       .populate("order", "orderNumber orderStatus")
+      .populate("product", "title images price")
       .sort({ lastMessageTime: -1 });
 
     // Calculate unread message counts for each conversation

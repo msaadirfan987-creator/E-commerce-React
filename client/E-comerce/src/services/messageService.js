@@ -24,8 +24,13 @@ api.interceptors.request.use(
 
 export const messageService = {
   sendMessage: async (messageData) => {
-    const response = await api.post('/messages', messageData);
-    return response.data;
+    try {
+      const response = await api.post('/messages', messageData);
+      return response.data;
+    } catch (error) {
+      const serverMessage = error?.response?.data?.message;
+      throw new Error(serverMessage || error.message || 'Message delivery failed.');
+    }
   },
 
   getMessages: async (conversationId) => {

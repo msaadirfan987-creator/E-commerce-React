@@ -1,8 +1,8 @@
 {
-  "attemptTime": "2026-07-31T18:06:29.135Z",
-  "enteredEmail": "tayyab123@gmail.com",
-  "enteredPassword": "123123123",
-  "normalizedEmail": "tayyab123@gmail.com",
+  "attemptTime": "2026-08-01T17:22:08.996Z",
+  "enteredEmail": "msaadirfan987@gmail.com",
+  "enteredPassword": "123456789",
+  "normalizedEmail": "msaadirfan987@gmail.com",
   "allDbUsers": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
@@ -11,8 +11,13 @@
       "password": "$2b$10$HrlBPomWEXNpG3jgJYiLreCVGKpeZgO9qoXbPYmcJXU9zMhrwDFTG",
       "role": "customer",
       "createdAt": "2026-07-30T17:21:39.807Z",
-      "updatedAt": "2026-07-30T18:29:05.493Z",
-      "__v": 0
+      "updatedAt": "2026-07-31T19:28:57.212Z",
+      "__v": 0,
+      "isBlocked": false,
+      "isVerified": true,
+      "lastLogin": "2026-07-31T19:28:57.211Z",
+      "revenue": 0,
+      "sellerStatus": "Pending"
     },
     {
       "_id": "6a6b8993699740aa21d4c913",
@@ -51,13 +56,15 @@
       "password": "$2b$10$rTKDRAnXlxMlV0CywaQKieHD1005CkMl0vvEXEodfO/l55WshiNCC",
       "role": "seller",
       "createdAt": "2026-07-31T10:01:16.812Z",
-      "updatedAt": "2026-07-31T17:08:07.322Z",
+      "updatedAt": "2026-07-31T20:05:55.643Z",
       "__v": 0,
       "approvedAt": "2026-07-31T17:08:07.322Z",
       "approvedBy": "6a6cd3f54cd6e51d72d643a4",
       "isBlocked": false,
       "isVerified": false,
-      "sellerStatus": "Approved"
+      "sellerStatus": "Approved",
+      "lastLogin": "2026-07-31T20:05:55.608Z",
+      "revenue": 108
     },
     {
       "_id": "6a6c8ed909a3f348c5dca5db",

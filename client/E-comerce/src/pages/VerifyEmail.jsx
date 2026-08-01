@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ButtonLoader from '../components/loaders/ButtonLoader';
 
 const VerifyEmail = () => {
   const location = useLocation();
@@ -152,13 +153,14 @@ const VerifyEmail = () => {
             />
           </div>
 
-          <button 
+          <ButtonLoader
             type="submit"
-            disabled={loading || !email}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-          >
-            {loading ? 'Verifying Account...' : 'Verify Code'}
-          </button>
+            loading={loading}
+            disabled={!email}
+            label="Verify Code"
+            loadingLabel="Verifying Account..."
+            className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-lg transition-colors cursor-pointer"
+          />
         </form>
 
         {/* Resend & Actions */}

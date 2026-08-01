@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
+import ButtonLoader from '../components/loaders/ButtonLoader';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -284,13 +285,13 @@ const AuthPage = () => {
                   </label>
                 </div>
 
-                <button
+                <ButtonLoader
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-lg transition-all disabled:opacity-50"
-                >
-                  {loading ? 'Creating account...' : 'Create Account'}
-                </button>
+                  loading={loading}
+                  label="Create Account"
+                  loadingLabel="Creating account..."
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs py-2.5 font-bold rounded-lg transition-all"
+                />
 
                 <p className="text-center text-[10px] font-bold text-slate-400 pt-1">
                   Already have an account?{' '}
@@ -324,13 +325,13 @@ const AuthPage = () => {
                   />
                 </div>
 
-                <button
+                <ButtonLoader
                   type="submit"
-                  disabled={loading}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold py-2.5 rounded-lg transition-all disabled:opacity-50"
-                >
-                  {loading ? 'Signing in...' : 'Sign In'}
-                </button>
+                  loading={loading}
+                  label="Sign In"
+                  loadingLabel="Signing in..."
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs py-2.5 font-bold rounded-lg transition-all"
+                />
 
                 <p className="text-center text-[10px] font-bold text-slate-400 pt-1">
                   Don't have an account?{' '}

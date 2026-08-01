@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; 
 import { useCart } from '../context/CartContext';
 import productService from '../services/productService';
+import ProductSkeleton from './loaders/ProductSkeleton';
+import ImageLoader from './loaders/ImageLoader';
 
 const ProductGrid = () => {
   const { addToCart } = useCart();
@@ -38,8 +40,10 @@ const ProductGrid = () => {
 
   if (loading) {
     return (
-      <div className="py-20 text-center w-full select-none">
-        <p className="text-slate-400 font-bold text-xs animate-pulse">Loading catalog items...</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 w-full select-none">
+        {[...Array(6)].map((_, i) => (
+          <ProductSkeleton key={i} />
+        ))}
       </div>
     );
   }
@@ -60,11 +64,11 @@ const ProductGrid = () => {
           >
             {/* Product Image Wrapper */}
             <div className="w-full aspect-square bg-slate-50 overflow-hidden relative">
-              <img 
+              <ImageLoader 
                 src={productImage} 
                 alt={product.title} 
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=300&q=80'; }}
+                className="w-full h-full"
+                imgClassName="group-hover:scale-[1.02] transition-transform duration-300"
               />
             </div>
 

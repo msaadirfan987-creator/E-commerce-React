@@ -106,11 +106,15 @@ const MyOrders = () => {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {loading ? (
-                  <tr>
-                    <td colSpan="5" className="py-12 text-center text-xs font-bold text-slate-400 animate-pulse">
-                      Loading your order history...
-                    </td>
-                  </tr>
+                  [...Array(4)].map((_, i) => (
+                    <tr key={i} className="animate-pulse border-b border-slate-100">
+                      <td className="py-4 px-4"><div className="h-3.5 bg-slate-100 rounded-full w-28" /></td>
+                      <td className="py-4 px-4"><div className="h-3.5 bg-slate-100 rounded-full w-36" /></td>
+                      <td className="py-4 px-4"><div className="h-3.5 bg-slate-100 rounded-full w-16" /></td>
+                      <td className="py-4 px-4"><div className="h-5 bg-slate-100 rounded-full w-20" /></td>
+                      <td className="py-4 px-4 text-right"><div className="h-7 bg-slate-100 rounded-lg w-16 inline-block" /></td>
+                    </tr>
+                  ))
                 ) : error ? (
                   <tr>
                     <td colSpan="5" className="py-12 text-center text-xs font-bold text-rose-500">
@@ -152,6 +156,12 @@ const MyOrders = () => {
                         </td>
 
                         <td className="py-4 px-4 text-right space-x-3 text-xs font-bold">
+                          <Link 
+                            to={`/messages?sellerId=${order.seller?._id || order.seller}&productId=${order.items[0]?.product?._id || order.items[0]?.product}&orderId=${order._id}`}
+                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                          >
+                            Message Seller
+                          </Link>
                           <Link 
                             to={`/my-orders/${orderId}`}
                             className="text-slate-550 hover:text-slate-900 transition-colors"

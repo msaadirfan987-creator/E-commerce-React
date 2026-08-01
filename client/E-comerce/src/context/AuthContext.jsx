@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
           const parsedUser = JSON.parse(storedUser);
           setToken(storedToken);
           setUser(parsedUser);
+          localStorage.setItem('userId', parsedUser._id || parsedUser.id);
 
           // Verify if token is still valid by hitting the backend verify endpoint
           const response = await fetch(`${API_URL}/api/auth/me`, {
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }) => {
             if (data.success && data.user) {
               setUser(data.user);
               localStorage.setItem('user', JSON.stringify(data.user));
+              localStorage.setItem('userId', data.user._id || data.user.id);
             }
           } else {
             // Token is invalid/expired
@@ -54,12 +56,14 @@ export const AuthProvider = ({ children }) => {
   const handleLogin = (newToken, newUser) => {
     localStorage.setItem('token', newToken);
     localStorage.setItem('user', JSON.stringify(newUser));
+    localStorage.setItem('userId', newUser._id || newUser.id);
     setToken(newToken);
     setUser(newUser);
   };
 
   // Handle logout
   const handleLogout = () => {
+    localStorage.removeItem('userId');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);

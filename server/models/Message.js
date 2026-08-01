@@ -21,6 +21,16 @@ const MessageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    order: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order",
+      required: false,
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: false,
+    },
     isRead: {
       type: Boolean,
       default: false,

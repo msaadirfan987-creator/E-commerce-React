@@ -15,7 +15,12 @@ const ConversationSchema = new mongoose.Schema(
     order: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Order",
-      required: true,
+      required: false,
+    },
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+      required: false,
     },
     lastMessage: {
       type: String,
@@ -31,7 +36,7 @@ const ConversationSchema = new mongoose.Schema(
   }
 );
 
-// Prevent duplicate conversations for the same buyer, seller, and order
-ConversationSchema.index({ buyer: 1, seller: 1, order: 1 }, { unique: true });
+// Index to help speed up conversation lookup
+ConversationSchema.index({ buyer: 1, seller: 1, order: 1, product: 1 });
 
 module.exports = mongoose.model("Conversation", ConversationSchema);

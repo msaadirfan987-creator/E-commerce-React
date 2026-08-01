@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import SalesChart from './components/SalesChart';
 import RecentOrdersTable from './components/RecentOrdersTable';
 import { Link } from 'react-router-dom';
+import DashboardSkeleton from '../../components/loaders/DashboardSkeleton';
 
 const DashboardHome = () => {
   const { user, token } = useAuth();
@@ -46,11 +47,7 @@ const DashboardHome = () => {
   });
 
   if (loading) {
-    return (
-      <div className="min-h-[50vh] flex items-center justify-center select-none">
-        <p className="text-slate-400 font-bold text-xs animate-pulse">Retrieving merchant stats...</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error || !data) {
