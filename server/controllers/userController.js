@@ -7,13 +7,12 @@ const User = require("../models/User");
  */
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
-    if (!user) {
+    if (!req.user) {
       return res.status(404).json({ success: false, message: "User not found." });
     }
     
-    // Convert to object and strip password
-    const userObj = user.toObject();
+    // Convert to object and strip password if present
+    const userObj = req.user.toObject ? req.user.toObject() : { ...req.user };
     delete userObj.password;
 
     res.status(200).json({
