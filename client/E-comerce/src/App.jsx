@@ -17,6 +17,7 @@ const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const AboutPage = lazy(() => import('./pages/AboutPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const SearchResults = lazy(() => import('./pages/SearchResults'));
+const Profile = lazy(() => import('./pages/Profile'));
 
 // Admin imports
 const AdminRoute = lazy(() => import('./components/AdminRoute'));
@@ -89,6 +90,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/product/:id" element={<SingleProduct />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />

@@ -115,7 +115,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
   try {
     // Check if the stored password is a bcrypt hash
     const isHash = this.password && (this.password.startsWith('$2a$') || this.password.startsWith('$2b$') || this.password.startsWith('$2y$'));
-    
+
     if (isHash) {
       const isMatch = await bcrypt.compare(enteredPassword, this.password);
       console.log(`[comparePassword] Bcrypt comparison match: ${isMatch}`);
@@ -124,7 +124,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
       // Fallback for existing plain text passwords
       const isMatch = enteredPassword === this.password;
       console.log(`[comparePassword] Plain text fallback comparison match: ${isMatch}`);
-      
+
       // Auto-upgrade plain text passwords to bcrypt hashes on successful login
       if (isMatch) {
         console.log("[comparePassword] Upgrading plain text password to bcrypt hash...");
@@ -134,7 +134,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
         await this.save();
         console.log("[comparePassword] Password upgraded and saved to DB successfully.");
       }
-      
+
       return isMatch;
     }
   } catch (error) {

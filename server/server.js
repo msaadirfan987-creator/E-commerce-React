@@ -58,6 +58,10 @@ app.use("/api/auth", authRoutes);
 const productRoutes = require("./routes/productRoutes");
 app.use("/api/products", productRoutes);
 
+// Mount user profile routing middleware on the '/api/users' path prefix
+const userRoutes = require("./routes/userRoutes");
+app.use("/api/users", userRoutes);
+
 // Mount order management routing middleware on the '/api/orders' path prefix
 const orderRoutes = require("./routes/orderRoutes");
 app.use("/api/orders", orderRoutes);
