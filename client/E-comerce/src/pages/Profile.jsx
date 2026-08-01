@@ -129,7 +129,6 @@ const Profile = () => {
   if (loading) {
     return (
       <>
-        <Navbar />
         <div className="min-h-screen bg-slate-50 py-10 select-none font-sans">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
             
@@ -174,7 +173,6 @@ const Profile = () => {
   if (!user) {
     return (
       <>
-        <Navbar />
         <div className="min-h-screen bg-slate-50 py-20 text-center font-sans select-none animate-fadeIn">
           <div className="max-w-md mx-auto bg-white border border-slate-200 p-8 rounded-2xl shadow-sm space-y-4">
             <div className="mx-auto w-12 h-12 bg-rose-50 rounded-full border border-rose-100 flex items-center justify-center text-rose-500">
@@ -223,8 +221,6 @@ const Profile = () => {
 
   return (
     <>
-      <Navbar />
-
       <div className="min-h-screen bg-slate-50 py-10 select-none font-sans">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-6">
 
