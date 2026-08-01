@@ -184,8 +184,8 @@ const Profile = () => {
             </div>
             
             <h2 className="text-sm font-bold text-slate-800 tracking-tight">Profile Load Failed</h2>
-            <p className="text-xs text-slate-400 font-bold max-w-xs mx-auto">
-              We encountered an issue loading your profile details from the database. Please ensure you are logged in.
+            <p className="text-xs text-rose-500 font-bold max-w-xs mx-auto leading-relaxed">
+              {error || "We encountered an issue loading your profile details from the database. Please ensure you are logged in."}
             </p>
             <div className="pt-2 flex justify-center gap-2">
               <button 
