@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const SidebarFilters = ({ onFilterChange }) => {
+const SidebarFilters = ({ onFilterChange, initialFilters }) => {
   // Filter States
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [priceRange, setPriceRange] = useState(1000);
-  const [selectedRating, setSelectedRating] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(initialFilters?.searchQuery || '');
+  const [selectedCategory, setSelectedCategory] = useState(initialFilters?.selectedCategory || 'All');
+  const [priceRange, setPriceRange] = useState(initialFilters?.priceRange || 1000);
+  const [selectedRating, setSelectedRating] = useState(initialFilters?.selectedRating || null);
+
+  useEffect(() => {
+    if (initialFilters) {
+      if (initialFilters.searchQuery !== undefined) setSearchQuery(initialFilters.searchQuery);
+      if (initialFilters.selectedCategory !== undefined) setSelectedCategory(initialFilters.selectedCategory);
+      if (initialFilters.priceRange !== undefined) setPriceRange(initialFilters.priceRange);
+      if (initialFilters.selectedRating !== undefined) setSelectedRating(initialFilters.selectedRating);
+    }
+  }, [initialFilters]);
 
   // Theme Config
   const theme = {

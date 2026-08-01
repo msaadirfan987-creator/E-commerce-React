@@ -33,6 +33,11 @@ export const productService = {
     const response = await api.get('/products', { params: filters });
     return response.data;
   },
+
+  searchProducts: async (params = {}) => {
+    const response = await api.get('/products/search', { params });
+    return response.data;
+  },
   
   getProductById: async (id) => {
     const response = await api.get(`/products/${id}`);

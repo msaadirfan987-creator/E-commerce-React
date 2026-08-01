@@ -3,10 +3,10 @@ import { Menu, Search, Bell, Mail, Globe } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import UserProfileDropdown from './UserProfileDropdown';
 import Notifications from './Notifications';
+import SearchBar from '../../../components/SearchBar';
 
 const TopNavbar = ({ toggleMobileSidebar, sidebarOpen }) => {
   const { user } = useAuth();
-  const [searchVal, setSearchVal] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   
@@ -50,18 +50,7 @@ const TopNavbar = ({ toggleMobileSidebar, sidebarOpen }) => {
       </div>
 
       {/* Center Search */}
-      <div className="hidden md:flex flex-1 max-w-xs mx-4">
-        <div className="w-full flex items-center rounded-lg border border-slate-200 bg-slate-50/50 px-2.5 py-1 transition-all focus-within:border-slate-400">
-          <Search className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <input 
-            type="text" 
-            placeholder="Search console..." 
-            value={searchVal}
-            onChange={(e) => setSearchVal(e.target.value)}
-            className="w-full px-2 text-xs font-semibold bg-transparent focus:outline-none text-slate-700 placeholder-slate-400"
-          />
-        </div>
-      </div>
+      <SearchBar placeholder="Search console..." containerClassName="hidden md:flex flex-1 max-w-xs mx-4" />
 
       {/* Right User Widgets */}
       <div className="flex items-center gap-3">

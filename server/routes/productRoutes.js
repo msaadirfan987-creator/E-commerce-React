@@ -7,6 +7,7 @@ const {
   getProductById,
   updateProduct,
   deleteProduct,
+  searchProducts,
 } = require("../controllers/productController");
 
 const { protect, authorize, isApprovedSeller } = require("../middleware/authMiddleware");
@@ -16,6 +17,9 @@ router
   .route("/")
   .get(getProducts)
   .post(protect, authorize("seller"), isApprovedSeller, createProduct);
+
+// Search products route (defined before :id to prevent parameter conflict)
+router.get("/search", searchProducts);
 
 // Specific routes by product ID for retrieving (public), updating (sellers only), or deleting (sellers only)
 router

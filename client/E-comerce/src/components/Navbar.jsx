@@ -6,10 +6,10 @@ import CartComponent from './CartComponent';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import messageService from '../services/messageService';
+import SearchBar from './SearchBar';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { cartCount } = useCart();
   
@@ -92,22 +92,7 @@ const Navbar = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="hidden md:flex flex-grow max-w-sm relative mx-2">
-          <div className="w-full flex items-center rounded-lg border border-slate-200 focus-within:border-slate-400 bg-slate-50/50 px-3 py-1.5 transition-all">
-            <span className="text-slate-400">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-              </svg>
-            </span>
-            <input 
-              type="text" 
-              placeholder="Search products..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-2 text-xs font-semibold text-slate-800 bg-transparent focus:outline-none placeholder-slate-400"
-            />
-          </div>
-        </div>
+        <SearchBar className="hidden md:flex" />
 
         {/* Shortcuts */}
         <div className="flex items-center gap-3 shrink-0">

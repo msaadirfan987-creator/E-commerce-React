@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 /* Minimal, professional global focus ring and interaction styles */
-input, select, textarea {
+input:not(.bg-transparent), select, textarea {
   @apply focus:ring-1 focus:ring-slate-900 focus:border-slate-900;
+}
+
+input.bg-transparent:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
 }
 
 /* Subtle click feedback for interactive elements instead of bouncing */
