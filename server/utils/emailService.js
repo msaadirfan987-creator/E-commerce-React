@@ -48,13 +48,7 @@ const sendVerificationEmail = async (email, code) => {
     }
   }
 
-  // Fallback / Development print block
-  console.log("\n==================================================");
-  console.log("📨  CARTIFY EMAIL VERIFICATION SIMULATOR");
-  console.log(`To:      ${email}`);
-  console.log(`Code:    ${code}`);
-  console.log(`Expires: 10 minutes from now`);
-  console.log("==================================================\n");
+  // Fallback / Development print block (disabled console.logs to prevent showing code in terminal/VS Code output)
   return true;
 };
 

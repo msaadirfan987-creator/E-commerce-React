@@ -40,6 +40,15 @@ const protect = async (req, res, next) => {
         });
       }
 
+      // Check if the user's account email has been verified
+      if (!req.user.isVerified) {
+        return res.status(401).json({
+          success: false,
+          message: "Please verify your account before accessing this route.",
+          isUnverified: true,
+        });
+      }
+
       // Proceed to the next middleware or request handler function in the pipeline
       next();
     } catch (error) {

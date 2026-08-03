@@ -93,6 +93,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/product/:id" element={<SingleProduct />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order-success/:orderNumber" element={<OrderSuccess />} />
         <Route path="/my-orders" element={<MyOrders />} />

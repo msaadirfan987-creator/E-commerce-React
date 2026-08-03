@@ -1,5 +1,8 @@
 // Import the User model to perform database operations on the users collection
 const User = require("../models/User");
+const PendingUser = require("../models/PendingUser");
+const crypto = require("crypto");
+const bcrypt = require("bcryptjs");
 // Import jsonwebtoken to create signed tokens for authentication state
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
@@ -54,52 +57,72 @@ const signup = async (req, res) => {
       });
     }
 
-    // Check if a user with the provided email already exists in MongoDB Atlas
+    // Check if a user with the provided email already exists in MongoDB permanent Users collection
     const existingUser = await User.findOne({ email: normalizedEmail });
-    // If user exists, send error response
     if (existingUser) {
-      // Return 400 Bad Request denoting email conflict
       return res.status(400).json({
         success: false,
         message: "An account with this email address already exists.",
       });
     }
 
-    // Generate a 6-digit verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    // Expiration time set to 10 minutes from now
-    const verificationExpires = new Date(Date.now() + 10 * 60 * 1000);
+    // Check if there is an unverified pending signup for this email
+    const existingPending = await PendingUser.findOne({ email: normalizedEmail });
+    if (existingPending) {
+      return res.status(400).json({
+        success: false,
+        isUnverified: true,
+        email: existingPending.email,
+        message: "An account with this email address already exists.",
+      });
+    }
 
-    // Create a new user document in MongoDB (pre-save hook hashes password)
-    const user = await User.create({
+    // Generate a secure cryptographic 6-digit verification code
+    const verificationCode = crypto.randomInt(100000, 1000000).toString();
+    // Expiration time set strictly to 5 minutes from now
+    const expirationMinutes = 5;
+    const verificationExpires = new Date(Date.now() + expirationMinutes * 60 * 1000);
+
+    // Hash the password securely using bcrypt before storing in PendingUser
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create a new pending user document in MongoDB
+    const pendingUser = await PendingUser.create({
       fullName,
       email: normalizedEmail,
-      password, // Bcryptjs will hash this automatically in the User schema pre-save hook
+      password: hashedPassword,
       role,
-      isVerified: false,
       verificationCode,
       verificationExpires,
-      lastCodeSentAt: new Date(),
-      sellerStatus: role === "seller" ? "Pending" : "Approved", // Sellers are pending admin approval
     });
 
-    // Send the verification code email
-    await sendVerificationEmail(user.email, verificationCode);
+    // Determine if we are running in local development mode
+    const isDevelopment = process.env.NODE_ENV !== "production" || 
+                          (req.headers.host && (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1")));
+
+    // Send the verification code email in production, otherwise bypass to show on screen for development
+    if (!isDevelopment) {
+      await sendVerificationEmail(pendingUser.email, verificationCode);
+    }
 
     // Return a 201 Created response
-    res.status(201).json({
+    const responsePayload = {
       success: true,
-      message: "Registration successful. Please check your email for the verification code.",
+      message: "Signup started. Please verify your account.",
       user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-        sellerStatus: user.sellerStatus,
-        isBlocked: user.isBlocked,
-        isVerified: user.isVerified,
+        fullName: pendingUser.fullName,
+        email: pendingUser.email,
+        role: pendingUser.role,
+        isVerified: false,
       },
-    });
+    };
+
+    if (isDevelopment) {
+      responsePayload.verificationCode = verificationCode;
+    }
+
+    res.status(201).json(responsePayload);
   } catch (error) {
     // Return 500 Internal Server Error if something fails unexpectedly
     res.status(500).json({
@@ -120,32 +143,7 @@ const login = async (req, res) => {
     const normalizedEmail = email ? email.toLowerCase().trim() : "";
     console.log(`[Login Attempt] Email: ${normalizedEmail}`);
 
-    try {
-      const client = new MongoClient(process.env.MONGO_URI);
-      await client.connect();
-      const db = client.db();
-      const dbUsers = await db.collection("users").find({}).toArray();
-      await client.close();
 
-      fs.writeFileSync(
-        path.join(__dirname, "../login_debug.txt"),
-        JSON.stringify({
-          attemptTime: new Date().toISOString(),
-          enteredEmail: email,
-          enteredPassword: password,
-          normalizedEmail,
-          allDbUsers: dbUsers
-        }, null, 2)
-      );
-    } catch (err) {
-      fs.writeFileSync(
-        path.join(__dirname, "../login_debug.txt"),
-        JSON.stringify({
-          attemptTime: new Date().toISOString(),
-          error: err.message
-        }, null, 2)
-      );
-    }
 
     // Validate that email and password are provided in the payload
     if (!email || !password) {
@@ -162,6 +160,25 @@ const login = async (req, res) => {
 
     // If no user is found with this email
     if (!user) {
+      // Check if there is a pending, unverified user
+      const pendingUser = await PendingUser.findOne({ email: normalizedEmail });
+      if (pendingUser) {
+        const isDevelopment = process.env.NODE_ENV !== "production" || 
+                              (req.headers.host && (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1")));
+        const responsePayload = {
+          success: false,
+          isUnverified: true,
+          email: pendingUser.email,
+          message: "Please verify your account before logging in.",
+        };
+
+        if (isDevelopment) {
+          responsePayload.verificationCode = pendingUser.verificationCode;
+        }
+
+        return res.status(400).json(responsePayload);
+      }
+
       // Return 401 Unauthorized for invalid credentials to protect system details
       return res.status(401).json({
         success: false,
@@ -177,8 +194,6 @@ const login = async (req, res) => {
       });
     }
 
-
-
     // Verify if the password matches the hashed password stored in the database
     const isMatch = await user.comparePassword(password);
     console.log(`[Login Info] Password Match: ${isMatch}`);
@@ -189,16 +204,6 @@ const login = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password.",
-      });
-    }
-
-    // Check if the user's account email has been verified
-    if (!user.isVerified) {
-      return res.status(400).json({
-        success: false,
-        isUnverified: true,
-        email: user.email,
-        message: "Please verify your email before logging in.",
       });
     }
 
@@ -302,35 +307,45 @@ const verifyEmail = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email: normalizedEmail });
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "No account found with this email address.",
-      });
-    }
-
-    if (user.isVerified) {
+    // Look up the pending signup record
+    const pendingUser = await PendingUser.findOne({ email: normalizedEmail });
+    if (!pendingUser) {
       return res.status(400).json({
         success: false,
-        message: "This account has already been verified. Please log in.",
+        message: "Invalid verification code.",
       });
     }
 
-    if (user.verificationCode !== code || user.verificationExpires < new Date()) {
+    // Verify the verification code matches
+    if (pendingUser.verificationCode !== code) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired verification code.",
+        message: "Invalid verification code.",
       });
     }
 
-    // Complete verification
-    user.isVerified = true;
-    user.verificationCode = null;
-    user.verificationExpires = null;
-    await user.save();
+    // Verify the verification code has not expired (strictly 5 minutes validity)
+    if (pendingUser.verificationExpires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification code has expired.",
+      });
+    }
 
-    // Auto-login upon verification
+    // Create the permanent User document in the database
+    const user = await User.create({
+      fullName: pendingUser.fullName,
+      email: pendingUser.email,
+      password: pendingUser.password, // Already hashed using bcryptjs during signup
+      role: pendingUser.role,
+      isVerified: true,
+      sellerStatus: pendingUser.role === "seller" ? "Pending" : "Approved",
+    });
+
+    // Delete the pending signup record
+    await PendingUser.deleteOne({ _id: pendingUser._id });
+
+    // Generate JWT token containing user ID and role for auto-login
     const token = generateToken(user._id, user.role);
 
     res.status(200).json({
@@ -366,24 +381,18 @@ const resendVerificationCode = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email: normalizedEmail });
-    if (!user) {
+    // Look up the pending signup record
+    const pendingUser = await PendingUser.findOne({ email: normalizedEmail });
+    if (!pendingUser) {
       return res.status(404).json({
         success: false,
-        message: "No account found with this email address.",
-      });
-    }
-
-    if (user.isVerified) {
-      return res.status(400).json({
-        success: false,
-        message: "This account is already verified. Please log in.",
+        message: "No pending registration found for this email address.",
       });
     }
 
     // Rate Limit/Cooldown check (60 seconds)
-    if (user.lastCodeSentAt) {
-      const timeSinceLastCode = Date.now() - new Date(user.lastCodeSentAt).getTime();
+    if (pendingUser.updatedAt) {
+      const timeSinceLastCode = Date.now() - new Date(pendingUser.updatedAt).getTime();
       const cooldownRemaining = Math.ceil((60 * 1000 - timeSinceLastCode) / 1000);
       if (cooldownRemaining > 0) {
         return res.status(429).json({
@@ -393,18 +402,32 @@ const resendVerificationCode = async (req, res) => {
       }
     }
 
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    user.verificationCode = verificationCode;
-    user.verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
-    user.lastCodeSentAt = new Date();
-    await user.save();
+    // Generate a completely new random cryptographic 6-digit verification code
+    const verificationCode = crypto.randomInt(100000, 1000000).toString();
+    pendingUser.verificationCode = verificationCode;
+    // Set code validity strictly to 5 minutes
+    pendingUser.verificationExpires = new Date(Date.now() + 5 * 60 * 1000);
+    await pendingUser.save();
 
-    await sendVerificationEmail(user.email, verificationCode);
+    // Determine if we are running in local development mode
+    const isDevelopment = process.env.NODE_ENV !== "production" || 
+                          (req.headers.host && (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1")));
 
-    res.status(200).json({
+    // Send the verification code email in production, otherwise bypass to show on screen for development
+    if (!isDevelopment) {
+      await sendVerificationEmail(pendingUser.email, verificationCode);
+    }
+
+    const responsePayload = {
       success: true,
       message: "Verification code sent successfully.",
-    });
+    };
+
+    if (isDevelopment) {
+      responsePayload.verificationCode = verificationCode;
+    }
+
+    res.status(200).json(responsePayload);
   } catch (error) {
     res.status(500).json({
       success: false,

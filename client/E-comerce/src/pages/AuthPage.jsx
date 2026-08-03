@@ -3,8 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { useAuth } from '../context/AuthContext';
 import ButtonLoader from '../components/loaders/ButtonLoader';
+import VerificationCodeModal from '../components/VerificationCodeModal';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000'
+  : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -27,10 +30,16 @@ const AuthPage = () => {
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Custom Verification Modal states
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
+
   const handleToggleMode = (signUpMode) => {
     setIsSignUp(signUpMode);
     setError('');
     setSuccess('');
+    setUnverifiedEmail('');
   };
 
   const handleLogin = async (e) => {
@@ -79,6 +88,9 @@ const AuthPage = () => {
         }, 1500);
       } else if (data.isUnverified) {
         localStorage.setItem('unverified_email', loginEmail);
+        if (data.verificationCode) {
+          localStorage.setItem('temp_verification_code', data.verificationCode);
+        }
         setError('Please verify your email before logging in.');
         setSuccess('Redirecting to email verification...');
         setTimeout(() => {
@@ -138,19 +150,65 @@ const AuthPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        localStorage.setItem('unverified_email', signupEmail);
-        setSuccess('Registration successful. Redirecting to email verification...');
-        setTimeout(() => {
+        if (!data.verificationCode) {
           setLoading(false);
-          navigate('/verify-email');
-        }, 1500);
+          setError('Verification code could not be generated. Please try again.');
+          return;
+        }
+        localStorage.setItem('unverified_email', signupEmail);
+        localStorage.setItem('temp_verification_code', data.verificationCode);
+        setVerificationCode(data.verificationCode);
+        setSuccess('Registration successful!');
+        setLoading(false);
+        setShowVerificationModal(true); // Open the modal immediately!
       } else {
         setLoading(false);
         setError(data.message || 'Registration failed.');
+        if (data.isUnverified && data.email) {
+          setUnverifiedEmail(data.email);
+        } else {
+          setUnverifiedEmail('');
+        }
       }
     } catch (err) {
       setLoading(false);
       setError('Connection error: Could not reach the registration server.');
+    }
+  };
+
+  const handleResendUnverifiedCode = async () => {
+    if (!unverifiedEmail) return;
+    setLoading(true);
+    setError('');
+    setSuccess('');
+    try {
+      const response = await fetch(`${API_URL}/api/auth/resend-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: unverifiedEmail }),
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        if (!data.verificationCode) {
+          setLoading(false);
+          setError('Verification code could not be generated. Please try again.');
+          return;
+        }
+        localStorage.setItem('temp_verification_code', data.verificationCode);
+        setVerificationCode(data.verificationCode);
+        localStorage.setItem('unverified_email', unverifiedEmail);
+        setSuccess('Verification code resent successfully.');
+        setLoading(false);
+        setShowVerificationModal(true); // Open the verification code modal immediately!
+      } else {
+        setLoading(false);
+        setError(data.message || 'Failed to resend verification code.');
+      }
+    } catch (err) {
+      setLoading(false);
+      setError('Connection error: Could not reach the server.');
     }
   };
 
@@ -198,8 +256,28 @@ const AuthPage = () => {
 
             {/* Error / Success alerts */}
             {error && (
-              <div className="bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-bold p-3 rounded-lg">
-                {error}
+              <div className="bg-rose-50 border border-rose-100 text-rose-600 text-[10px] font-bold p-3 rounded-lg flex flex-col gap-2">
+                <div>{error}</div>
+                {unverifiedEmail && (
+                  <div className="flex gap-2 mt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigate('/verify-email', { state: { email: unverifiedEmail } });
+                      }}
+                      className="bg-slate-900 text-white text-[9px] py-1 px-2.5 rounded-md hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      Continue Verification
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResendUnverifiedCode}
+                      className="bg-white border border-slate-200 text-slate-700 text-[9px] py-1 px-2.5 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
+                    >
+                      Resend Code
+                    </button>
+                  </div>
+                )}
               </div>
             )}
             {success && (
@@ -341,6 +419,19 @@ const AuthPage = () => {
         </div>
 
       </div>
+
+      <VerificationCodeModal
+        isOpen={showVerificationModal}
+        code={verificationCode}
+        onClose={() => {
+          setShowVerificationModal(false);
+          navigate('/verify-email', { state: { email: signupEmail } });
+        }}
+        onContinue={() => {
+          setShowVerificationModal(false);
+          navigate('/verify-email', { state: { email: signupEmail } });
+        }}
+      />
 
     </div>
   );

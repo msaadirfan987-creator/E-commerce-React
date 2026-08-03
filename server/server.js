@@ -19,29 +19,7 @@ const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
 
-if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-  mongoose.connection.once("open", async () => {
-    try {
-      const User = require("./models/User");
-      const users = await User.find({}).select("+password").lean();
-      fs.writeFileSync(
-        path.join(__dirname, "debug_log.txt"),
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          users,
-        }, null, 2)
-      );
-    } catch (err) {
-      fs.writeFileSync(
-        path.join(__dirname, "debug_log.txt"),
-        JSON.stringify({
-          timestamp: new Date().toISOString(),
-          error: err.message,
-        }, null, 2)
-      );
-    }
-  });
-}
+
 
 // Assign the port number from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;

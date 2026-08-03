@@ -3,7 +3,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 // Create the AuthContext
 const AuthContext = createContext(null);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000'
+  : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -105,7 +107,14 @@ export const AuthProvider = ({ children }) => {
       });
 
       const data = await response.json();
-      return { success: response.ok && data.success, message: data.message };
+      if (response.ok && data.success && data.verificationCode) {
+        localStorage.setItem('temp_verification_code', data.verificationCode);
+      }
+      return {
+        success: response.ok && data.success,
+        message: data.message,
+        verificationCode: data.verificationCode
+      };
     } catch (error) {
       return { success: false, message: 'Server error: ' + error.message };
     }
