@@ -76,18 +76,20 @@ const signup = async (req, res) => {
       email: normalizedEmail,
       password, // Bcryptjs will hash this automatically in the User schema pre-save hook
       role,
-      isVerified: true,
+      isVerified: false,
+      verificationCode,
+      verificationExpires,
+      lastCodeSentAt: new Date(),
       sellerStatus: role === "seller" ? "Pending" : "Approved", // Sellers are pending admin approval
     });
 
-    // Generate JWT token containing user ID and role for authorization
-    const token = generateToken(user._id, user.role);
+    // Send the verification code email
+    await sendVerificationEmail(user.email, verificationCode);
 
-    // Return a 201 Created response with auto-login token
+    // Return a 201 Created response
     res.status(201).json({
       success: true,
-      message: "Registration successful.",
-      token,
+      message: "Registration successful. Please check your email for the verification code.",
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -187,6 +189,16 @@ const login = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password.",
+      });
+    }
+
+    // Check if the user's account email has been verified
+    if (!user.isVerified) {
+      return res.status(400).json({
+        success: false,
+        isUnverified: true,
+        email: user.email,
+        message: "Please verify your email before logging in.",
       });
     }
 
@@ -369,9 +381,22 @@ const resendVerificationCode = async (req, res) => {
       });
     }
 
+    // Rate Limit/Cooldown check (60 seconds)
+    if (user.lastCodeSentAt) {
+      const timeSinceLastCode = Date.now() - new Date(user.lastCodeSentAt).getTime();
+      const cooldownRemaining = Math.ceil((60 * 1000 - timeSinceLastCode) / 1000);
+      if (cooldownRemaining > 0) {
+        return res.status(429).json({
+          success: false,
+          message: `Please wait ${cooldownRemaining} seconds before requesting a new code.`,
+        });
+      }
+    }
+
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
     user.verificationCode = verificationCode;
     user.verificationExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+    user.lastCodeSentAt = new Date();
     await user.save();
 
     await sendVerificationEmail(user.email, verificationCode);

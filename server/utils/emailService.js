@@ -5,10 +5,10 @@ const nodemailer = require("nodemailer");
  * If SMTP configuration is missing, logs it to the console in development.
  */
 const sendVerificationEmail = async (email, code) => {
-  const smtpHost = process.env.SMTP_HOST;
-  const smtpPort = process.env.SMTP_PORT;
-  const smtpUser = process.env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS;
+  const smtpHost = process.env.EMAIL_HOST || process.env.SMTP_HOST;
+  const smtpPort = process.env.EMAIL_PORT || process.env.SMTP_PORT;
+  const smtpUser = process.env.EMAIL_USER || process.env.SMTP_USER;
+  const smtpPass = process.env.EMAIL_PASSWORD || process.env.SMTP_PASS;
 
   if (smtpHost && smtpPort && smtpUser && smtpPass) {
     try {

@@ -77,6 +77,14 @@ const AuthPage = () => {
           setLoading(false);
           navigate(targetRoute);
         }, 1500);
+      } else if (data.isUnverified) {
+        localStorage.setItem('unverified_email', loginEmail);
+        setError('Please verify your email before logging in.');
+        setSuccess('Redirecting to email verification...');
+        setTimeout(() => {
+          setLoading(false);
+          navigate('/verify-email');
+        }, 1500);
       } else {
         setLoading(false);
         setError(data.message || 'Login failed. Verify email and password.');
@@ -130,22 +138,11 @@ const AuthPage = () => {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        login(data.token, data.user);
-        let targetRoute = '/';
-        let targetName = 'Home Page';
-        
-        if (data.user.role === 'admin') {
-          targetRoute = '/admin/dashboard';
-          targetName = 'Admin Dashboard';
-        } else if (data.user.role === 'seller') {
-          targetRoute = '/dashboard';
-          targetName = 'Seller Dashboard';
-        }
-
-        setSuccess(`Registration successful. Redirecting to ${targetName}...`);
+        localStorage.setItem('unverified_email', signupEmail);
+        setSuccess('Registration successful. Redirecting to email verification...');
         setTimeout(() => {
           setLoading(false);
-          navigate(targetRoute);
+          navigate('/verify-email');
         }, 1500);
       } else {
         setLoading(false);

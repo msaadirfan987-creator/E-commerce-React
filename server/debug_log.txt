@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-01T18:40:51.563Z",
+  "timestamp": "2026-08-03T18:59:09.906Z",
   "users": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
@@ -8,11 +8,11 @@
       "password": "$2b$10$HrlBPomWEXNpG3jgJYiLreCVGKpeZgO9qoXbPYmcJXU9zMhrwDFTG",
       "role": "customer",
       "createdAt": "2026-07-30T17:21:39.807Z",
-      "updatedAt": "2026-08-01T18:28:47.499Z",
+      "updatedAt": "2026-08-01T19:04:06.407Z",
       "__v": 0,
       "isBlocked": false,
       "isVerified": true,
-      "lastLogin": "2026-08-01T18:28:47.481Z",
+      "lastLogin": "2026-08-01T19:04:06.402Z",
       "revenue": 0,
       "sellerStatus": "Pending"
     },
@@ -86,10 +86,11 @@
       "isBlocked": false,
       "approvedBy": null,
       "approvedAt": null,
-      "lastLogin": "2026-07-31T17:45:09.813Z",
+      "lastLogin": "2026-08-01T18:49:04.271Z",
       "createdAt": "2026-07-31T16:57:25.918Z",
-      "updatedAt": "2026-07-31T17:45:09.818Z",
-      "__v": 0
+      "updatedAt": "2026-08-01T18:49:04.272Z",
+      "__v": 0,
+      "revenue": 0
     },
     {
       "_id": "6a6cdeab5c9a0d65ccf4b671",
@@ -125,6 +126,25 @@
       "lastLogin": null,
       "createdAt": "2026-07-31T17:46:16.697Z",
       "updatedAt": "2026-07-31T17:46:47.562Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a70e3b1da469ae3055d152d",
+      "fullName": "Muhammad Saad",
+      "email": "saad3456@gmail.com",
+      "password": "$2b$10$oR4izZnG2phOQ8CL7ZCuieCJp.A11oosH3OqLIIaywBTS7eSQy8Hy",
+      "role": "seller",
+      "isVerified": true,
+      "verificationCode": null,
+      "verificationExpires": null,
+      "sellerStatus": "Pending",
+      "isBlocked": false,
+      "revenue": 0,
+      "approvedBy": null,
+      "approvedAt": null,
+      "lastLogin": null,
+      "createdAt": "2026-08-03T18:53:37.153Z",
+      "updatedAt": "2026-08-03T18:53:37.153Z",
       "__v": 0
     }
   ]

@@ -10,6 +10,53 @@ const VerifyEmail = () => {
 
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [codeDigits, setCodeDigits] = useState(['', '', '', '', '', '']);
+  const inputRefs = [
+    React.useRef(null),
+    React.useRef(null),
+    React.useRef(null),
+    React.useRef(null),
+    React.useRef(null),
+    React.useRef(null)
+  ];
+
+  // Sync digits array to single code string
+  useEffect(() => {
+    setCode(codeDigits.join(''));
+  }, [codeDigits]);
+
+  const handleDigitChange = (index, val) => {
+    const cleanVal = val.replace(/\D/g, '').slice(-1);
+    const newDigits = [...codeDigits];
+    newDigits[index] = cleanVal;
+    setCodeDigits(newDigits);
+
+    if (cleanVal && index < 5) {
+      inputRefs[index + 1].current.focus();
+    }
+  };
+
+  const handleDigitKeyDown = (index, e) => {
+    if (e.key === 'Backspace') {
+      if (!codeDigits[index] && index > 0) {
+        inputRefs[index - 1].current.focus();
+        const newDigits = [...codeDigits];
+        newDigits[index - 1] = '';
+        setCodeDigits(newDigits);
+      }
+    }
+  };
+
+  const handleDigitPaste = (e) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (pastedData.length === 6) {
+      const newDigits = pastedData.split('');
+      setCodeDigits(newDigits);
+      inputRefs[5].current.focus();
+    }
+  };
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -136,28 +183,33 @@ const VerifyEmail = () => {
         )}
 
         {/* Form */}
-        <form onSubmit={handleVerify} className="space-y-4">
-          <div className="space-y-1">
-            <label htmlFor="code" className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-              6-Digit Code
+        <form onSubmit={handleVerify} className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block text-center">
+              Enter 6-Digit Code
             </label>
-            <input 
-              id="code"
-              type="text" 
-              maxLength="6"
-              placeholder="e.g. 123456"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-              className="w-full text-center text-xl font-bold tracking-[8px] py-3 rounded-lg border border-slate-200 focus:outline-none focus:border-slate-400 bg-slate-50/50"
-              required
-            />
+            <div className="flex justify-between items-center gap-2" onPaste={handleDigitPaste}>
+              {codeDigits.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={inputRefs[index]}
+                  type="text"
+                  maxLength="1"
+                  value={digit}
+                  onChange={(e) => handleDigitChange(index, e.target.value)}
+                  onKeyDown={(e) => handleDigitKeyDown(index, e)}
+                  className="w-12 h-12 text-center text-xl font-extrabold border border-slate-200 focus:border-slate-850 bg-slate-50/50 rounded-xl focus:outline-none transition-all"
+                  required
+                />
+              ))}
+            </div>
           </div>
 
           <ButtonLoader
             type="submit"
             loading={loading}
-            disabled={!email}
-            label="Verify Code"
+            disabled={!email || code.length !== 6}
+            label="Verify Account"
             loadingLabel="Verifying Account..."
             className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-2.5 rounded-lg transition-colors cursor-pointer"
           />

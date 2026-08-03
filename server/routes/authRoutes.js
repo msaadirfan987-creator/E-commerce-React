@@ -19,6 +19,7 @@ router.post("/login", login);
 
 // Route to verify email using 6-digit code
 router.post("/verify", verifyEmail);
+router.post("/verify-email", verifyEmail);
 
 // Route to resend verification email code
 router.post("/resend-code", resendVerificationCode);

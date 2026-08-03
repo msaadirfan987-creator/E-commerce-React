@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }) => {
   // Verify email address with 6-digit code
   const verifyEmail = async (email, code) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/verify`, {
+      const response = await fetch(`${API_URL}/api/auth/verify-email`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -1,8 +1,8 @@
 {
-  "attemptTime": "2026-08-01T18:28:47.077Z",
-  "enteredEmail": "msaadirfan987@gmail.com",
-  "enteredPassword": "123456789",
-  "normalizedEmail": "msaadirfan987@gmail.com",
+  "attemptTime": "2026-08-01T18:49:03.510Z",
+  "enteredEmail": "admin@cartify.com",
+  "enteredPassword": "AdminPass123!",
+  "normalizedEmail": "admin@cartify.com",
   "allDbUsers": [
     {
       "_id": "6a6b882384d74e7d3293c5b3",
@@ -11,11 +11,11 @@
       "password": "$2b$10$HrlBPomWEXNpG3jgJYiLreCVGKpeZgO9qoXbPYmcJXU9zMhrwDFTG",
       "role": "customer",
       "createdAt": "2026-07-30T17:21:39.807Z",
-      "updatedAt": "2026-08-01T17:22:09.460Z",
+      "updatedAt": "2026-08-01T18:28:47.499Z",
       "__v": 0,
       "isBlocked": false,
       "isVerified": true,
-      "lastLogin": "2026-08-01T17:22:09.446Z",
+      "lastLogin": "2026-08-01T18:28:47.481Z",
       "revenue": 0,
       "sellerStatus": "Pending"
     },
