@@ -97,16 +97,7 @@ const signup = async (req, res) => {
       verificationExpires,
     });
 
-    // Determine if we are running in local development mode
-    const isDevelopment = process.env.NODE_ENV !== "production" || 
-                          (req.headers.host && (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1")));
-
-    // Send the verification code email in production, otherwise bypass to show on screen for development
-    if (!isDevelopment) {
-      await sendVerificationEmail(pendingUser.email, verificationCode);
-    }
-
-    // Return a 201 Created response
+    // Return a 201 Created response and always expose verificationCode for current testing/deployment verification
     const responsePayload = {
       success: true,
       message: "Signup started. Please verify your account.",
@@ -116,11 +107,8 @@ const signup = async (req, res) => {
         role: pendingUser.role,
         isVerified: false,
       },
+      verificationCode: verificationCode,
     };
-
-    if (isDevelopment) {
-      responsePayload.verificationCode = verificationCode;
-    }
 
     res.status(201).json(responsePayload);
   } catch (error) {
@@ -163,18 +151,13 @@ const login = async (req, res) => {
       // Check if there is a pending, unverified user
       const pendingUser = await PendingUser.findOne({ email: normalizedEmail });
       if (pendingUser) {
-        const isDevelopment = process.env.NODE_ENV !== "production" || 
-                              (req.headers.host && (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1")));
         const responsePayload = {
           success: false,
           isUnverified: true,
           email: pendingUser.email,
           message: "Please verify your account before logging in.",
+          verificationCode: pendingUser.verificationCode,
         };
-
-        if (isDevelopment) {
-          responsePayload.verificationCode = pendingUser.verificationCode;
-        }
 
         return res.status(400).json(responsePayload);
       }
@@ -409,23 +392,11 @@ const resendVerificationCode = async (req, res) => {
     pendingUser.verificationExpires = new Date(Date.now() + 5 * 60 * 1000);
     await pendingUser.save();
 
-    // Determine if we are running in local development mode
-    const isDevelopment = process.env.NODE_ENV !== "production" || 
-                          (req.headers.host && (req.headers.host.includes("localhost") || req.headers.host.includes("127.0.0.1")));
-
-    // Send the verification code email in production, otherwise bypass to show on screen for development
-    if (!isDevelopment) {
-      await sendVerificationEmail(pendingUser.email, verificationCode);
-    }
-
     const responsePayload = {
       success: true,
       message: "Verification code sent successfully.",
+      verificationCode: verificationCode,
     };
-
-    if (isDevelopment) {
-      responsePayload.verificationCode = verificationCode;
-    }
 
     res.status(200).json(responsePayload);
   } catch (error) {
